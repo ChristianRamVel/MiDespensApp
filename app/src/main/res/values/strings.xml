@@ -1,18 +1,16 @@
 <resources>
     <string name="app_name">MiDespensApp</string>
-    <string name="titulo_despensa">Home</string>
-    <string name="titulo_lista">Dashboard</string>
-    <string name="titulo_notificaciones">Notifications</string>
+    <string name="titulo_despensa">Despensa</string>
+    <string name="titulo_lista">Lista de la Compra</string>
+    <string name="titulo_notificaciones">Notificaciones</string>
     <string name="añadir">+</string>
     <string name="producto">producto</string>
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
-    <string name="login_failed">"Login failed"</string>
-    <string name="titulo_login">login</string>
+    <string name="cantidadParaComprar">cantidad</string>
+    <string name="cantidadParaRegistrarProducto">cantidad a comprar</string>
+    <string name="cantidadAlmacenada">cantidadAlmacenada</string>
+    <string name="nombreProducto">nombre del producto</string>
+    <string name="cantidadMinimaProducto">cantidad minima de stock</string>
+    <string name="cantidadActualProducto">cantidad actual del producto</string>
+    <string name="registar_prod_despensa">registar producto</string>
+    <string name="instruccionesRegistroProducto">si la cantidad es menor que el stock minimo, se entendera que quiere añadir a la lista de la compra este nuevo producto</string>
 </resources>

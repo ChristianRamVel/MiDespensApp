@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
-
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
         android:orientation="horizontal">
 
         <TextView
@@ -21,23 +20,33 @@
             android:textColor="@color/black"
             android:padding="15dp" />
 
+        <TextView
+            android:id="@+id/textoCantidadItem"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/cantidadAlmacenada"
+            android:textSize="20sp"
+            android:textColor="@color/black"
+            android:padding="15dp" />
+
         <Button
             android:id="@+id/btnMas"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
             android:text="+"
-            android:textSize="20sp"
+            android:textSize="10sp"
             android:layout_marginEnd="20dp" />
 
         <Button
             android:id="@+id/btnMenos"
-            android:layout_width="40dp"
+            android:layout_width="35dp"
             android:layout_height="wrap_content"
             android:text="-"
-            android:textSize="20sp"
+            android:textSize="10sp"
             android:layout_marginEnd="20dp"
             />
 
     </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

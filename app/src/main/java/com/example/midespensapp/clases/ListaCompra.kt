@@ -1,5 +1,5 @@
 package com.example.midespensapp.clases
 
-class ListaCompra (val listaProductos: ArrayList<Producto>){
+data class ListaCompra(val listaProductos: ArrayList<Producto>) {
 
 }

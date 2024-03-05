@@ -12,7 +12,6 @@
         android:id="@+id/listView"
         />
 
-
     <Button
         android:id="@+id/button_add_product"
         android:layout_width="70dp"
