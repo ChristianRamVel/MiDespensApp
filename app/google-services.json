@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "949735088213",
+    "project_id": "midespensaapp-ddc2e",
+    "storage_bucket": "midespensaapp-ddc2e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949735088213:android:d332dcc8c317c14d55f4dc",
+        "android_client_info": {
+          "package_name": "com.example.midespensapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTMSjh8XzMBp0LNruqdNQ9IgxfiMSNYwE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
