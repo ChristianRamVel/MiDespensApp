@@ -1,6 +1,7 @@
 package com.example.examenrecuperacion_crv.DB
 
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -197,5 +198,63 @@ class DbHelper(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null
         }
         cursor.close()
         return productosList
+    }
+
+    //funcion para actualizar la cantidad actual de un producto
+    fun actualizarCantidadActual(producto: Producto, cantidad: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_CANTIDAD_ACTUAL, cantidad)
+        return db.update(TABLE_PRODUCTOS, contentValues, "$KEY_ID = ?", arrayOf(producto.id.toString()))
+    }
+
+    //funcion para actualizar la cantidad a comprar de un producto
+    fun actualizarCantidadAComprar(producto: Producto, cantidad: Int): Int {
+        val db = this.writableDatabase
+        val contentValues = ContentValues()
+        contentValues.put(KEY_CANTIDAD_COMPRAR, cantidad)
+        return db.update(TABLE_PRODUCTOS, contentValues, "$KEY_ID = ?", arrayOf(producto.id.toString()))
+    }
+
+    //funcion para obtener la cantidad actual de un producto
+    @SuppressLint("Range")
+    fun getCantidadActual(producto: Producto): Int {
+        val db = this.readableDatabase
+        val selectQuery = "SELECT $KEY_CANTIDAD_ACTUAL FROM $TABLE_PRODUCTOS WHERE $KEY_ID = ?"
+        val cursor = db.rawQuery(selectQuery, arrayOf(producto.id.toString()))
+        var cantidad = 0
+        if (cursor.moveToFirst()) {
+            cantidad = cursor.getInt(cursor.getColumnIndex(KEY_CANTIDAD_ACTUAL))
+        }
+        cursor.close()
+        return cantidad
+    }
+
+    //funcion para obtener la cantidad a comprar de un producto
+    @SuppressLint("Range")
+    fun getCantidadAComprar(producto: Producto): Int {
+        val db = this.readableDatabase
+        val selectQuery = "SELECT $KEY_CANTIDAD_COMPRAR FROM $TABLE_PRODUCTOS WHERE $KEY_ID = ?"
+        val cursor = db.rawQuery(selectQuery, arrayOf(producto.id.toString()))
+        var cantidad = 0
+        if (cursor.moveToFirst()) {
+            cantidad = cursor.getInt(cursor.getColumnIndex(KEY_CANTIDAD_COMPRAR))
+        }
+        cursor.close()
+        return cantidad
+    }
+
+    //funcion para obtener la cantidad minima de un producto
+    @SuppressLint("Range")
+    fun getCantidadMinima(producto: Producto): Int {
+        val db = this.readableDatabase
+        val selectQuery = "SELECT $KEY_CANTIDAD_MINIMA FROM $TABLE_PRODUCTOS WHERE $KEY_ID = ?"
+        val cursor = db.rawQuery(selectQuery, arrayOf(producto.id.toString()))
+        var cantidad = 0
+        if (cursor.moveToFirst()) {
+            cantidad = cursor.getInt(cursor.getColumnIndex(KEY_CANTIDAD_MINIMA))
+        }
+        cursor.close()
+        return cantidad
     }
 }
