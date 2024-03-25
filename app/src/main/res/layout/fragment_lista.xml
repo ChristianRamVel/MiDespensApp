@@ -6,11 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.lista.ListaFragment">
 
-
     <ListView
+        android:id="@+id/lvListaCompra"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lvListaCompra"
+
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

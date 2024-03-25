@@ -12,6 +12,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import com.example.examenrecuperacion_crv.DB.DbHelper
+import com.example.midespensapp.MainActivity2
 import com.example.midespensapp.R
 import com.example.midespensapp.clases.Producto
 
@@ -24,11 +25,15 @@ class ListaFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
-
-        dbHandler = DbHelper(requireContext())
+        // Inflar el diseño de tu fragmento
         val view = inflater.inflate(R.layout.fragment_lista, container, false)
+
+        // Inicializar la base de datos y la lista de productos
+        //dbHandler = DbHelper(requireContext())
+        //listarProductos()
+
         lvListaProductos = view.findViewById(R.id.lvListaCompra)
-        listarProductos()
+
         return view
     }
 

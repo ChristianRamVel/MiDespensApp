@@ -5,12 +5,25 @@
     <string name="titulo_notificaciones">Notificaciones</string>
     <string name="añadir">+</string>
     <string name="producto">producto</string>
-    <string name="cantidadParaComprar">cantidad</string>
-    <string name="cantidadParaRegistrarProducto">cantidad a comprar</string>
+    <string name="cantidad_en_stock">cantidad actual en stock</string>
+    <string name="cantidadParaComprar">cantidad a comprar</string>
     <string name="cantidadAlmacenada">cantidadAlmacenada</string>
     <string name="nombreProducto">nombre del producto</string>
     <string name="cantidadMinimaProducto">cantidad minima de stock</string>
     <string name="cantidadActualProducto">cantidad actual del producto</string>
     <string name="registar_prod_despensa">registar producto</string>
     <string name="instruccionesRegistroProducto">si la cantidad es menor que el stock minimo, se entendera que quiere añadir a la lista de la compra este nuevo producto</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Acceder</string>
+    <string name="action_register">Registrarse</string>
+    <string name="welcome">"Bienvenido !"</string>
+    <string name="invalid_username">Usuario no valido</string>
+    <string name="invalid_password">La contraseña debe ser mayor de 5 cracteres</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="checkbox">Añadir a la lista de la compra</string>
+    <string name="registrarse">registrarse</string>
+    <string name="web_client_id">949735088213-hcjd0iu9e9nkdv3p73gvg2f4s3knf93b.apps.googleusercontent.com</string>
+    <string name="cerrar_sesion">Cerrar Sesion</string>
 </resources>
