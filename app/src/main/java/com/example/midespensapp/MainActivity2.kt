@@ -5,12 +5,7 @@ import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import com.example.examenrecuperacion_crv.DB.DbHelper
-import com.example.midespensapp.clases.Producto
 
 class MainActivity2 : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,9 +56,6 @@ class MainActivity2 : AppCompatActivity() {
                     Toast.makeText(this, "La cantidad mínima no puede ser mayor que la cantidad actual y la cantidad a comprar", Toast.LENGTH_SHORT).show()
                 }
             }
-            val dbHelper = DbHelper(this)
-            val producto = Producto(0, nombreProducto, cantidadMinimaProducto, cantidadActualProducto, cantidadAComprar)
-            dbHelper.addProducto(producto)
 
             finish()
         }

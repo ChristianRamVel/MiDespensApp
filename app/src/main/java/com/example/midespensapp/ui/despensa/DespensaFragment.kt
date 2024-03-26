@@ -1,25 +1,16 @@
 package com.example.midespensapp.ui.despensa
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.BaseAdapter
 import android.widget.ListView
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.example.examenrecuperacion_crv.DB.DbHelper
-import com.example.midespensapp.MainActivity2
 import com.example.midespensapp.R
-import com.example.midespensapp.clases.Producto
-import com.example.midespensapp.databinding.FragmentDespensaBinding
 
 class DespensaFragment : Fragment() {
 
-    private lateinit var dbHandler: DbHelper
     private lateinit var lvListaProductos: ListView
 
     override fun onCreateView(
@@ -28,15 +19,20 @@ class DespensaFragment : Fragment() {
 
 
         val view = inflater.inflate(R.layout.fragment_despensa, container, false)
-
-        // Inicializar la base de datos y la lista de productos
-        //dbHandler = DbHelper(requireContext())
-        //listarProductos()
         lvListaProductos = view.findViewById(R.id.listViewDespensa)
 
         return view
     }
 
+
+
+
+
+
+
+
+
+/*
     private fun listarProductos() {
         lvListaProductos.adapter = ProductosAdapter(requireContext(), dbHandler.getAllProductos())
     }
@@ -95,4 +91,5 @@ class DespensaFragment : Fragment() {
             return view!!
         }
     }
+    */
 }

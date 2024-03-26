@@ -1,49 +1,54 @@
 package com.example.midespensapp.ui.lista
 
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
-import android.widget.EditText
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.examenrecuperacion_crv.DB.DbHelper
-import com.example.midespensapp.MainActivity2
+import com.example.midespensapp.DB.ObtenerDatosCallBack
+import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
+import com.example.midespensapp.DB.RealTimeManager
 import com.example.midespensapp.R
-import com.example.midespensapp.clases.Producto
+import com.example.midespensapp.clases.Casa
+import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.clases.Usuario
+import com.google.firebase.database.DatabaseError
 
 
 class ListaFragment : Fragment() {
 
-    private lateinit var dbHandler: DbHelper
     private lateinit var lvListaProductos: ListView
-
+    private val realTimeManager = RealTimeManager()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         // Inflar el diseño de tu fragmento
         val view = inflater.inflate(R.layout.fragment_lista, container, false)
-
-        // Inicializar la base de datos y la lista de productos
-        //dbHandler = DbHelper(requireContext())
-        //listarProductos()
-
+        // Obtener la referencia de la lista de productos
         lvListaProductos = view.findViewById(R.id.lvListaCompra)
 
+        //obtener los productos de la lista de la compra y mostrarlos en un log
+        realTimeManager.obtenerProductosListaCompraPorIdCasa("0", object : ObtenerProductosListaCompraCallBack {
+            override fun onProductosObtenidos(productos: List<ProductoListaCompra>) {
+                Log.d("ListaFragment", "Productos obtenidos: $productos")
+                lvListaProductos.adapter = ProductosListaCompraAdapter(requireContext(), productos)
+            }
+
+            override fun onError(error: DatabaseError) {
+                Log.e("ListaFragment", "Error al obtener los productos de la lista de la compra", error.toException())
+            }
+        })
         return view
     }
-
-    private fun listarProductos() {
-        lvListaProductos.adapter = ProductosAdapter(requireContext(), dbHandler.getAllProductos())
-    }
-
-    class ProductosAdapter(context: Context, tareas: List<Producto>) : BaseAdapter() {
+    class ProductosListaCompraAdapter(context: Context, listaProductos: List<ProductoListaCompra>) :
+        BaseAdapter() {
         private val mContext: Context = context
-        private val listaDeProductos: List<Producto> = tareas
+        private val listaDeProductos: List<ProductoListaCompra> = listaProductos
 
         override fun getCount(): Int {
             return listaDeProductos.size
@@ -58,41 +63,38 @@ class ListaFragment : Fragment() {
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
+            val layoutInflater = LayoutInflater.from(mContext)
+            val view = layoutInflater.inflate(R.layout.item_lista, parent, false)
 
-            val dbHandler = DbHelper(mContext)
-            val producto = getItem(position) as Producto
-            var view = convertView
-            if (view == null) {
-                val inflater = LayoutInflater.from(mContext)
-                view = inflater.inflate(R.layout.item_lista, parent, false)
-            }
+            val producto = listaDeProductos[position]
+            val tvNombreProducto = view.findViewById<TextView>(R.id.nombreProducto)
+            val tvCantidadProducto = view.findViewById<TextView>(R.id.textoCantidadItem)
 
-            val textViewNombreProducto = view?.findViewById<TextView>(R.id.nombreProducto)
-            textViewNombreProducto?.text = producto.nombre
+            tvNombreProducto.text = producto.nombre
+            tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
-            val textViewCantidadProducto = view?.findViewById<TextView>(R.id.textoCantidadItem)
-            textViewCantidadProducto?.text = producto.cantidadAComprar.toString()
-
-            val buttonSumarProducto = view?.findViewById<TextView>(R.id.btnMas)
-            buttonSumarProducto?.setOnClickListener {
-                textViewCantidadProducto?.text =
-                    (textViewCantidadProducto?.text.toString().toInt() + 1).toString()
-                dbHandler.actualizarCantidadAComprar(
-                    producto,
-                    textViewCantidadProducto?.text.toString().toInt()
-                )
-            }
-
-            val buttonRestarProducto = view?.findViewById<TextView>(R.id.btnMenos)
-            buttonRestarProducto?.setOnClickListener {
-                textViewCantidadProducto?.text =
-                    (textViewCantidadProducto?.text.toString().toInt() - 1).toString()
-                dbHandler.actualizarCantidadAComprar(
-                    producto,
-                    textViewCantidadProducto?.text.toString().toInt()
-                )
-            }
-            return view!!
+            return view
         }
+
+
     }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
