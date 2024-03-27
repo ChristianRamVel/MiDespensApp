@@ -3,6 +3,7 @@ package com.example.midespensapp.DB
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.clases.Usuario
 import com.google.firebase.database.DatabaseError
 
 interface ObtenerDatosCallBack {
@@ -17,5 +18,10 @@ interface ObtenerProductosDespensaCallBack {
 
 interface ObtenerProductosListaCompraCallBack {
     fun onProductosObtenidos(productos: List<ProductoListaCompra>)
+    fun onError(error: DatabaseError)
+}
+
+interface ObtenerCasaPorIdUsuarioCallBack {
+    fun onCasaObtenida(casa: Casa) : Casa
     fun onError(error: DatabaseError)
 }

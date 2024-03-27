@@ -1,7 +1,7 @@
 package com.example.midespensapp.clases
 
 data class Casa(
-    val id: String? = null, // Cambiado de "key" a "id" para que coincida con el campo en tu base de datos
+    var id: String? = null, // Cambiado de "key" a "id" para que coincida con el campo en tu base de datos
     val productosDespensa: MutableList<ProductoDespensa> = mutableListOf(),
     val productosListaCompra: MutableList<ProductoListaCompra> = mutableListOf()
 ) {

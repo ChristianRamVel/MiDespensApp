@@ -26,4 +26,7 @@
     <string name="registrarse">registrarse</string>
     <string name="web_client_id">949735088213-hcjd0iu9e9nkdv3p73gvg2f4s3knf93b.apps.googleusercontent.com</string>
     <string name="cerrar_sesion">Cerrar Sesion</string>
+    <string name="registrarseEnCasaExistente">registrar en casa existente</string>
+    <string name="inserta_casa_id">Inserta el id de la casa</string>
+    <string name="casa_id">id de la casa</string>
 </resources>

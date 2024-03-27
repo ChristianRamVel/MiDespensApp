@@ -10,13 +10,12 @@ import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.midespensapp.DB.ObtenerDatosCallBack
+import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
 import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
 import com.example.midespensapp.DB.RealTimeManager
 import com.example.midespensapp.R
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoListaCompra
-import com.example.midespensapp.clases.Usuario
 import com.google.firebase.database.DatabaseError
 
 
@@ -33,6 +32,15 @@ class ListaFragment : Fragment() {
         lvListaProductos = view.findViewById(R.id.lvListaCompra)
 
         //obtener los productos de la lista de la compra y mostrarlos en un log
+        listarProductosListaCompra()
+        Log.d ("ListaFragment", "Productos obtenidos: ${listarProductosListaCompra()}")
+        //obtener la casa del usuario y mostrarla en un log
+
+
+        return view
+    }
+
+    private fun listarProductosListaCompra() {
         realTimeManager.obtenerProductosListaCompraPorIdCasa("0", object : ObtenerProductosListaCompraCallBack {
             override fun onProductosObtenidos(productos: List<ProductoListaCompra>) {
                 Log.d("ListaFragment", "Productos obtenidos: $productos")
@@ -43,8 +51,22 @@ class ListaFragment : Fragment() {
                 Log.e("ListaFragment", "Error al obtener los productos de la lista de la compra", error.toException())
             }
         })
-        return view
     }
+    private fun obtenerCasaPorIdUsuario(idUsuario: String){
+        realTimeManager.obtenerCasaPorIdUsuario(idUsuario, object : ObtenerCasaPorIdUsuarioCallBack {
+            override fun onCasaObtenida(casa: Casa):Casa {
+                Log.d("ListaFragment", "Casa obtenida: ${casa}")
+                return casa
+            }
+
+            override fun onError(error: DatabaseError) {
+                Log.e("ListaFragment", "Error al obtener la casa", error.toException())
+            }
+        })
+    }
+
+
+
     class ProductosListaCompraAdapter(context: Context, listaProductos: List<ProductoListaCompra>) :
         BaseAdapter() {
         private val mContext: Context = context

@@ -7,12 +7,11 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.midespensapp.DB.RealTimeManager
+import com.example.midespensapp.clases.Usuario
 import com.google.android.gms.auth.api.identity.BeginSignInRequest
-import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
@@ -21,16 +20,15 @@ import com.google.firebase.ktx.Firebase
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private lateinit var signInRequest: BeginSignInRequest
-    private val REQ_ONE_TAP = 2  // Can be any integer unique to the Activity
-    private var showOneTapUI = true
+    private var realTimeManager = RealTimeManager()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
         super.onStart()
         auth = Firebase.auth
 
-        val logout = intent.getBooleanExtra("logout", false) // Verificamos si venimos de cerrar sesión
+        val logout =
+            intent.getBooleanExtra("logout", false) // Verificamos si venimos de cerrar sesión
 
         // Limpiar el historial de actividades
         if (logout) {
@@ -45,11 +43,11 @@ class LoginActivity : AppCompatActivity() {
         }
 
 
-
         val etEmail = findViewById<EditText>(R.id.email_edit_text)
         val etPassword = findViewById<EditText>(R.id.password_edit_text)
         val btnSingIn = findViewById<Button>(R.id.email_sign_in_button)
         val btnCreateAccount = findViewById<Button>(R.id.btnRegistrarse)
+        val btnRegistroEnCasaExistente = findViewById<Button>(R.id.btnRegistrarseEnCasaExistente)
 
         btnSingIn.setOnClickListener {
             if (etEmail.text.isNotEmpty() && etPassword.text.isNotEmpty()) {
@@ -60,9 +58,37 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        btnRegistroEnCasaExistente.setOnClickListener {
+            //mostrar un dialogo para que el usuario introduzca el id de la casa, lo hara manualmente introduciendolo con el teclado
+            createAccount(etEmail.text.toString(), etPassword.text.toString())
+            AlertDialog.Builder(this)
+                .setTitle("Introduce el id de la casa")
+                .setView(R.layout.dialog_insert_casa_id)
+                .setPositiveButton("Aceptar") { dialog, _ ->
+                    val etCasaId = (dialog as AlertDialog).findViewById<EditText>(R.id.etCasaId)
+                    if (etCasaId != null && etCasaId.text.isNotEmpty()) {
+                        // Guardar el id de la casa en la base de datos
+                        val usuario = Usuario(etEmail.text.toString(),etCasaId.text.toString())
+                        // Guardar el usuario en la base de datos
+                         realTimeManager.guardarUsuarioEnCasaExistente(usuario.email!!,usuario.idCasa!!)
+
+                        dialog.dismiss()
+                    } else {
+                        Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+                .setNegativeButton("Cancelar") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
+            updateUI(Firebase.auth.currentUser)
+        }
+
         btnCreateAccount.setOnClickListener {
             if (etEmail.text.isNotEmpty() && etPassword.text.isNotEmpty()) {
                 createAccount(etEmail.text.toString(), etPassword.text.toString())
+                updateUI(Firebase.auth.currentUser)
             } else {
                 Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT)
                     .show()
@@ -71,13 +97,17 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun createAccount(email: String, password: String) {
+
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "createUserWithEmail:success")
                     val user = auth.currentUser
-                    updateUI(user)
+                    // Llamar al método para guardar el usuario en la base de datos
+                    var  casaNueva = realTimeManager.crearCasaNueva()
+
+                    realTimeManager.guardarUsuario(email,casaNueva.id!!)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(TAG, "createUserWithEmail:failure", task.exception)
@@ -112,25 +142,8 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
     }
-/*
-    fun obtenerDatosCuenta() {
-        val user = Firebase.auth.currentUser
-        user?.let {
-            // Name, email address, and profile photo Url
-            val name = it.displayName
-            val email = it.email
-            val photoUrl = it.photoUrl
 
-            // Check if user's email is verified
-            val emailVerified = it.isEmailVerified
 
-            // The user's ID, unique to the Firebase project. Do NOT use this value to
-            // authenticate with your backend server, if you have one. Use
-            // FirebaseUser.getIdToken() instead.
-            val uid = it.uid
-        }
-    }
-*/
     fun updateUI(user: Any?) {
         if (user != null) {
             val intent = Intent(this, MainActivity::class.java)
