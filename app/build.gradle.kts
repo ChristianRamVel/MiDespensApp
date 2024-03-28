@@ -14,7 +14,7 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        resValue ("string","firebase_database_url", "https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -66,7 +66,7 @@ dependencies {
 
     // Add the dependency for the Realtime Database library
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-database:20.0.0")
 
     implementation(libs.firebase.database)
 }

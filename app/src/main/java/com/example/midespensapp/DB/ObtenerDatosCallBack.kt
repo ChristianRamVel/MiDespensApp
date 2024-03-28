@@ -12,16 +12,16 @@ interface ObtenerDatosCallBack {
 }
 
 interface ObtenerProductosDespensaCallBack {
-    fun onProductosObtenidos(productos: List<ProductoDespensa>)
+    fun onProductosObtenidos(productos: MutableList<ProductoDespensa>,)
     fun onError(error: DatabaseError)
 }
 
 interface ObtenerProductosListaCompraCallBack {
-    fun onProductosObtenidos(productos: List<ProductoListaCompra>)
+    fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>,)
     fun onError(error: DatabaseError)
 }
 
 interface ObtenerCasaPorIdUsuarioCallBack {
-    fun onCasaObtenida(casa: Casa) : Casa
+    fun onCasaObtenida(casa: Casa)
     fun onError(error: DatabaseError)
 }

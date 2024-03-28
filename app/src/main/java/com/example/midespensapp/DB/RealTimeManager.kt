@@ -6,13 +6,12 @@ import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
 import com.example.midespensapp.clases.Usuario
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 
 
 class RealTimeManager {
     private val databaseReference =
-        FirebaseDatabase.getInstance("https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app/").reference
+        FirebaseDatabase.getInstance("https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app").reference
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
 //segun este Json, crear los metodos para obtener los datos de la base de datos
     /*
@@ -77,27 +76,6 @@ class RealTimeManager {
     ]
 }*/
 
-    fun findUser(callback: (Usuario?) -> Unit) {
-        val currentUser: FirebaseUser? = mAuth.currentUser
-        currentUser?.uid?.let { userId ->
-            databaseReference.child(userId)
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(dataSnapshot: DataSnapshot) {
-                        val usuario: Usuario? = dataSnapshot.getValue(Usuario::class.java)
-                        callback(usuario)
-                    }
-
-                    override fun onCancelled(databaseError: DatabaseError) {
-                        // Manejar el error
-                        callback(null)
-                    }
-                })
-        } ?: run {
-            // No hay usuario autenticado
-            callback(null)
-        }
-    }
-
     fun obtenerProductosDespensaPorIdCasa(
         idCasa: String,
         callback: ObtenerProductosDespensaCallBack
@@ -108,7 +86,7 @@ class RealTimeManager {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val productosDespensa =
                     dataSnapshot.children.mapNotNull { it.getValue(ProductoDespensa::class.java) }
-                callback.onProductosObtenidos(productosDespensa)
+                callback.onProductosObtenidos(productosDespensa.toMutableList())
                 Log.d("RealTimeManager", "Productos de la despensa obtenidos: $productosDespensa")
             }
 
@@ -117,7 +95,6 @@ class RealTimeManager {
             }
         })
     }
-
     fun obtenerProductosListaCompraPorIdCasa(
         idCasa: String,
         callback: ObtenerProductosListaCompraCallBack
@@ -128,7 +105,7 @@ class RealTimeManager {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 val productosListaCompra =
                     dataSnapshot.children.mapNotNull { it.getValue(ProductoListaCompra::class.java) }
-                callback.onProductosObtenidos(productosListaCompra)
+                callback.onProductosObtenidos(productosListaCompra.toMutableList())
                 Log.d(
                     "RealTimeManager",
                     "Productos de la lista de la compra obtenidos: $productosListaCompra"
@@ -140,6 +117,7 @@ class RealTimeManager {
             }
         })
     }
+
 
     fun obtenerCasaPorIdUsuario(idUsuario: String, callback: ObtenerCasaPorIdUsuarioCallBack) {
         val casaReference =
@@ -272,4 +250,65 @@ class RealTimeManager {
             }
         })
     }
+
+    //funcion para aumentar en 1 la cantidad de un producto en la lista de la compra, este producto ya existe, a is que es un update
+
+    fun aumentarCantidadAComprar(casaId: String, productoNombre: String) {
+        Log.d("Firebase", "Comenzando a aumentar la cantidad a comprar del producto $productoNombre en la casa $casaId")
+
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val productosListaCompra = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoListaCompra>>() {})
+                Log.d("Firebase", "Datos obtenidos de Firebase: $productosListaCompra")
+
+                productosListaCompra?.forEach { producto ->
+                    if (producto.nombre == productoNombre) {
+                        producto.cantidadAComprar = producto.cantidadAComprar!! + 1
+                        Log.d("Firebase", "Nueva cantidad a comprar para $productoNombre: ${producto.cantidadAComprar}")
+
+                        ref.child(productosListaCompra.indexOf(producto).toString()).child("cantidadAComprar").setValue(producto.cantidadAComprar)
+                        Log.d("Firebase", "Cantidad a comprar actualizada correctamente en Firebase")
+
+                        return@forEach
+                    }
+                }
+                Log.d("Firebase", "Producto $productoNombre no encontrado en la lista de compra")
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error al acceder a Firebase: ${databaseError.message}")
+                // Manejar error
+            }
+        })
+    }
+
+    fun disminuirCantidadAComprar(casaId: String, productoNombre: String) {
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val productosListaCompra = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoListaCompra>>() {})
+
+                productosListaCompra?.forEach { producto ->
+                    if (producto.nombre == productoNombre) {
+                        if (producto.cantidadAComprar!! > 0) {
+                            producto.cantidadAComprar = producto.cantidadAComprar!! - 1
+                            ref.child(productosListaCompra.indexOf(producto).toString()).child("cantidadAComprar").setValue(producto.cantidadAComprar)
+                        }
+                        return@forEach
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejar error
+            }
+        })
+    }
+
+
 }
