@@ -148,7 +148,7 @@ class ListaFragment : Fragment() {
             val casaManager = CasaManager()
             casaManager.obtenerCasaPorIdUsuario(idUsuario) { casa ->
                 if (casa != null) {
-                    realTimeManager.disminuirCantidadAComprar(
+                    realTimeManager.disminuirCantidadAComprarCompra(
                         casa.id.toString(),
                         producto.nombre.toString()
                     )
@@ -169,7 +169,7 @@ class ListaFragment : Fragment() {
             val casaManager = CasaManager()
             casaManager.obtenerCasaPorIdUsuario(idUsuario) { casa ->
                 if (casa != null) {
-                    realTimeManager.aumentarCantidadAComprar(
+                    realTimeManager.aumentarCantidadAComprarCompra(
                         casa.id.toString(),
                         producto.nombre.toString()
                     )

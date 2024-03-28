@@ -29,4 +29,6 @@
     <string name="registrarseEnCasaExistente">registrar en casa existente</string>
     <string name="inserta_casa_id">Inserta el id de la casa</string>
     <string name="casa_id">id de la casa</string>
+    <string name="stockminimo">Minimo</string>
+    <string name="stock_actual">Actual</string>
 </resources>

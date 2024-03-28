@@ -6,10 +6,53 @@
     android:layout_height="match_parent"
     tools:context=".ui.despensa.DespensaFragment">
 
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        >
+
+        <TextView
+            android:id="@+id/nombreProducto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/producto"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="5dp"
+            android:layout_weight="1"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stockminimo"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:layout_weight="0.5"
+            android:id="@+id/textoStockMinimo"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stock_actual"
+            android:layout_marginLeft="22dp"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:layout_weight="7"
+            android:id="@+id/textoStockActual"
+            />
+
+
+    </LinearLayout>
+
     <ListView
         android:id="@+id/listViewDespensa"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+
+        app:layout_constraintTop_toBottomOf="@id/linearLayout"
+
         />
 
 

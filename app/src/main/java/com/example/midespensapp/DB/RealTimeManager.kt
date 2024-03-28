@@ -253,7 +253,7 @@ class RealTimeManager {
 
     //funcion para aumentar en 1 la cantidad de un producto en la lista de la compra, este producto ya existe, a is que es un update
 
-    fun aumentarCantidadAComprar(casaId: String, productoNombre: String) {
+    fun aumentarCantidadAComprarCompra(casaId: String, productoNombre: String) {
         Log.d("Firebase", "Comenzando a aumentar la cantidad a comprar del producto $productoNombre en la casa $casaId")
 
         val database = FirebaseDatabase.getInstance()
@@ -285,7 +285,7 @@ class RealTimeManager {
         })
     }
 
-    fun disminuirCantidadAComprar(casaId: String, productoNombre: String) {
+    fun disminuirCantidadAComprarCompra(casaId: String, productoNombre: String) {
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
 
@@ -309,6 +309,66 @@ class RealTimeManager {
             }
         })
     }
+
+
+    fun aumentarCantidadAComprarDespensa(casaId: String, productoNombre: String) {
+        Log.d("Firebase", "Comenzando a aumentar la cantidad en stock $productoNombre en la casa $casaId")
+
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("casas").child(casaId).child("productosDespensa")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val productosDespensa = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoDespensa>>() {})
+                Log.d("Firebase", "Datos obtenidos de Firebase: $productosDespensa")
+
+                productosDespensa?.forEach { producto ->
+                    if (producto.nombre == productoNombre) {
+                        producto.stockActual = producto.stockActual!! + 1
+                        Log.d("Firebase", "Nueva cantidad de stock $productoNombre: ${producto.stockActual}")
+
+                        ref.child(productosDespensa.indexOf(producto).toString()).child("stockActual").setValue(producto.stockActual)
+                        Log.d("Firebase", "Cantidad a comprar actualizada correctamente en Firebase")
+
+                        return@forEach
+                    }
+                }
+                Log.d("Firebase", "Producto $productoNombre no encontrado en la lista de compra")
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("Firebase", "Error al acceder a Firebase: ${databaseError.message}")
+                // Manejar error
+            }
+        })
+    }
+
+    fun disminuirCantidadAComprarDespensa(casaId: String, productoNombre: String) {
+        val database = FirebaseDatabase.getInstance()
+        val ref = database.getReference("casas").child(casaId).child("productosDespensa")
+
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val productosDespensa = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoDespensa>>() {})
+
+                productosDespensa?.forEach { producto ->
+                    if (producto.nombre == productoNombre) {
+                        if (producto.stockActual!! > 0) {
+                            producto.stockActual = producto.stockActual!! - 1
+                            ref.child(productosDespensa.indexOf(producto).toString()).child("stockActual").setValue(producto.stockActual)
+                        }
+                        return@forEach
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Manejar error
+            }
+        })
+    }
+
+
 
 
 }

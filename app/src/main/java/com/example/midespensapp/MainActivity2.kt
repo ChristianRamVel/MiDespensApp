@@ -61,4 +61,12 @@ class MainActivity2 : AppCompatActivity() {
         }
     }
 
+    //metodo para guardar los datos en la base de datos de firebase database, en la casa correspondiente al usuario
+    //en la lista de productosDespensa de la casa
+    private fun guardarProductoEnDespensa(nombreProducto: String, cantidadMinimaProducto: Int, cantidadActualProducto: Int, cantidadAComprar: Int) {
+
+
+
+    }
+
 }
