@@ -12,7 +12,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.95"
-        android:layout_marginLeft="5dp"
+        android:layout_marginStart="5dp"
         android:text="@string/producto"
         android:textColor="@color/black"
         android:textSize="20sp" />
@@ -38,19 +38,21 @@
 
     <Button
         android:id="@+id/btnMenos"
-        android:layout_width="35dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="-"
-        android:textSize="10sp" />
+        android:drawableLeft="@drawable/minus"
+        android:text=""
+        android:background="@null" />
 
     <Button
         android:id="@+id/btnMas"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="+"
-        android:textSize="10sp" />
+        android:drawableLeft="@drawable/plus"
+        android:text=""
+        android:background="@null" />
 
 
 

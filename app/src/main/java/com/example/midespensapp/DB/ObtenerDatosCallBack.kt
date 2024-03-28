@@ -25,3 +25,10 @@ interface ObtenerCasaPorIdUsuarioCallBack {
     fun onCasaObtenida(casa: Casa)
     fun onError(error: DatabaseError)
 }
+
+interface ComprobarSiCasaExisteCallBack {
+    fun onCasaExiste(existe: Boolean)
+    fun onCasaNoExiste(error: Boolean)
+
+    fun onError(error: DatabaseError)
+}

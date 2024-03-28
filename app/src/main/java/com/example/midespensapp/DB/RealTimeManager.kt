@@ -1,6 +1,8 @@
 package com.example.midespensapp.DB
 
+import android.content.ContentValues.TAG
 import android.util.Log
+import android.widget.Toast
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
@@ -13,7 +15,8 @@ class RealTimeManager {
     private val databaseReference =
         FirebaseDatabase.getInstance("https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app").reference
     private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
-//segun este Json, crear los metodos para obtener los datos de la base de datos
+
+    //segun este Json, crear los metodos para obtener los datos de la base de datos
     /*
 {
     "casas": [
@@ -95,6 +98,7 @@ class RealTimeManager {
             }
         })
     }
+
     fun obtenerProductosListaCompraPorIdCasa(
         idCasa: String,
         callback: ObtenerProductosListaCompraCallBack
@@ -169,7 +173,7 @@ class RealTimeManager {
 
     }
 
-    fun crearCasaNueva() : Casa{
+    fun crearCasaNueva(): Casa {
         val casa = Casa()
         val key = databaseReference.child("casas").push().key
         key?.let {
@@ -219,34 +223,21 @@ class RealTimeManager {
             }
     }
 
-    fun guardarUsuarioEnCasaExistente(email: String, idCasa: String) {
-    //primero comprobar si el id de la casa existe
-        databaseReference.child("casas").child(idCasa).addListenerForSingleValueEvent(object : ValueEventListener {
+    fun comprobarSiCasaExistePorIDCasa(idCasa: String, callback: ComprobarSiCasaExisteCallBack) {
+        val casaReference = databaseReference.child("casas").child(idCasa)
+        casaReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    // La casa existe, guardar el usuario
-                    val currentUser = mAuth.currentUser
-                    val userId = currentUser?.uid
-
-                    userId?.let {
-                        val usuario = Usuario(idUsuario = it, email = email, idCasa = idCasa)
-                        databaseReference.child("usuarios").child(it).setValue(usuario)
-                            .addOnSuccessListener {
-                                // La información del usuario se guardó correctamente
-                            }
-                            .addOnFailureListener { exception ->
-                                // Ocurrió un error al guardar la información del usuario
-                                // Manejar el error
-                            }
-                    }
+                    callback.onCasaExiste(true)
+                    Log.d("Firebase", "La casa existe")
                 } else {
-                    // La casa no existe
-                    // Manejar el error
+                    callback.onCasaNoExiste(false)
+                    Log.d("Firebase", "La casa no existe")
                 }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Manejar el error
+                callback.onError(databaseError)
             }
         })
     }
@@ -254,23 +245,34 @@ class RealTimeManager {
     //funcion para aumentar en 1 la cantidad de un producto en la lista de la compra, este producto ya existe, a is que es un update
 
     fun aumentarCantidadAComprarCompra(casaId: String, productoNombre: String) {
-        Log.d("Firebase", "Comenzando a aumentar la cantidad a comprar del producto $productoNombre en la casa $casaId")
+        Log.d(
+            "Firebase",
+            "Comenzando a aumentar la cantidad a comprar del producto $productoNombre en la casa $casaId"
+        )
 
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosListaCompra = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoListaCompra>>() {})
+                val productosListaCompra = dataSnapshot.getValue(object :
+                    GenericTypeIndicator<List<ProductoListaCompra>>() {})
                 Log.d("Firebase", "Datos obtenidos de Firebase: $productosListaCompra")
 
                 productosListaCompra?.forEach { producto ->
                     if (producto.nombre == productoNombre) {
                         producto.cantidadAComprar = producto.cantidadAComprar!! + 1
-                        Log.d("Firebase", "Nueva cantidad a comprar para $productoNombre: ${producto.cantidadAComprar}")
+                        Log.d(
+                            "Firebase",
+                            "Nueva cantidad a comprar para $productoNombre: ${producto.cantidadAComprar}"
+                        )
 
-                        ref.child(productosListaCompra.indexOf(producto).toString()).child("cantidadAComprar").setValue(producto.cantidadAComprar)
-                        Log.d("Firebase", "Cantidad a comprar actualizada correctamente en Firebase")
+                        ref.child(productosListaCompra.indexOf(producto).toString())
+                            .child("cantidadAComprar").setValue(producto.cantidadAComprar)
+                        Log.d(
+                            "Firebase",
+                            "Cantidad a comprar actualizada correctamente en Firebase"
+                        )
 
                         return@forEach
                     }
@@ -291,13 +293,15 @@ class RealTimeManager {
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosListaCompra = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoListaCompra>>() {})
+                val productosListaCompra = dataSnapshot.getValue(object :
+                    GenericTypeIndicator<List<ProductoListaCompra>>() {})
 
                 productosListaCompra?.forEach { producto ->
                     if (producto.nombre == productoNombre) {
                         if (producto.cantidadAComprar!! > 0) {
                             producto.cantidadAComprar = producto.cantidadAComprar!! - 1
-                            ref.child(productosListaCompra.indexOf(producto).toString()).child("cantidadAComprar").setValue(producto.cantidadAComprar)
+                            ref.child(productosListaCompra.indexOf(producto).toString())
+                                .child("cantidadAComprar").setValue(producto.cantidadAComprar)
                         }
                         return@forEach
                     }
@@ -312,23 +316,34 @@ class RealTimeManager {
 
 
     fun aumentarCantidadAComprarDespensa(casaId: String, productoNombre: String) {
-        Log.d("Firebase", "Comenzando a aumentar la cantidad en stock $productoNombre en la casa $casaId")
+        Log.d(
+            "Firebase",
+            "Comenzando a aumentar la cantidad en stock $productoNombre en la casa $casaId"
+        )
 
         val database = FirebaseDatabase.getInstance()
         val ref = database.getReference("casas").child(casaId).child("productosDespensa")
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosDespensa = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoDespensa>>() {})
+                val productosDespensa = dataSnapshot.getValue(object :
+                    GenericTypeIndicator<List<ProductoDespensa>>() {})
                 Log.d("Firebase", "Datos obtenidos de Firebase: $productosDespensa")
 
                 productosDespensa?.forEach { producto ->
                     if (producto.nombre == productoNombre) {
                         producto.stockActual = producto.stockActual!! + 1
-                        Log.d("Firebase", "Nueva cantidad de stock $productoNombre: ${producto.stockActual}")
+                        Log.d(
+                            "Firebase",
+                            "Nueva cantidad de stock $productoNombre: ${producto.stockActual}"
+                        )
 
-                        ref.child(productosDespensa.indexOf(producto).toString()).child("stockActual").setValue(producto.stockActual)
-                        Log.d("Firebase", "Cantidad a comprar actualizada correctamente en Firebase")
+                        ref.child(productosDespensa.indexOf(producto).toString())
+                            .child("stockActual").setValue(producto.stockActual)
+                        Log.d(
+                            "Firebase",
+                            "Cantidad a comprar actualizada correctamente en Firebase"
+                        )
 
                         return@forEach
                     }
@@ -349,13 +364,15 @@ class RealTimeManager {
 
         ref.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosDespensa = dataSnapshot.getValue(object : GenericTypeIndicator<List<ProductoDespensa>>() {})
+                val productosDespensa = dataSnapshot.getValue(object :
+                    GenericTypeIndicator<List<ProductoDespensa>>() {})
 
                 productosDespensa?.forEach { producto ->
                     if (producto.nombre == productoNombre) {
                         if (producto.stockActual!! > 0) {
                             producto.stockActual = producto.stockActual!! - 1
-                            ref.child(productosDespensa.indexOf(producto).toString()).child("stockActual").setValue(producto.stockActual)
+                            ref.child(productosDespensa.indexOf(producto).toString())
+                                .child("stockActual").setValue(producto.stockActual)
                         }
                         return@forEach
                     }
@@ -367,8 +384,6 @@ class RealTimeManager {
             }
         })
     }
-
-
 
 
 }

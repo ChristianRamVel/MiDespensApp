@@ -2,15 +2,24 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:background="@color/colorDeFondo"
+    >
 
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/checkBox"
+        android:layout_marginStart="5dp"
+        android:layout_weight="0" />
 
     <TextView
         android:id="@+id/nombreProducto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_weight="1.5"
         android:layout_marginLeft="5dp"
+        android:textAlignment="center"
         android:text="@string/producto"
         android:textColor="@color/black"
         android:textSize="20sp" />
@@ -26,19 +35,21 @@
 
     <Button
         android:id="@+id/btnMenos"
-        android:layout_width="35dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="-"
-        android:textSize="10sp" />
+        android:drawableLeft="@drawable/minus"
+        android:text=""
+        android:background="@null" />
 
     <Button
         android:id="@+id/btnMas"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="20dp"
-        android:text="+"
-        android:textSize="10sp" />
+        android:drawableLeft="@drawable/plus"
+        android:text=""
+        android:background="@null" />
 
 
 
