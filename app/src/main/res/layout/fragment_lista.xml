@@ -10,38 +10,35 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        >
+        app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/chbComprado"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/comprado"
-            android:textSize="15sp"
-            android:textColor="@color/black"
             android:layout_marginStart="5dp"
             android:layout_weight="1"
-            />
+            android:text="@string/comprado"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
         <TextView
             android:id="@+id/nombreProducto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/producto"
-            android:textSize="15sp"
-            android:textColor="@color/black"
             android:layout_weight="1"
-            />
+            android:text="@string/producto"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
+
         <TextView
+            android:id="@+id/textoStockMinimo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/cantidadParaComprar"
-            android:textSize="15sp"
-            android:textColor="@color/black"
             android:layout_weight="3.5"
-            android:id="@+id/textoStockMinimo"
-            />
+            android:text="@string/cantidadParaComprar"
+            android:textColor="@color/black"
+            android:textSize="15sp" />
 
 
     </LinearLayout>
@@ -50,7 +47,6 @@
         android:id="@+id/lvListaCompra"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
         app:layout_constraintTop_toBottomOf="@id/linearLayout"
 
         />
@@ -59,7 +55,7 @@
         android:id="@+id/btn_add_producto"
         android:layout_width="70dp"
         android:layout_height="80dp"
-        android:layout_marginEnd="30dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="60dp"
         android:text="@string/añadir"
         app:cornerRadius="40dp"
@@ -68,12 +64,16 @@
 
     <Button
         android:id="@+id/btn_añadir_seleccionados_despensa"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="30dp"
-        android:text="@string/guardar_en_despensa"
+        android:layout_width="50dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="20dp"
+        android:drawableRight="@drawable/pasaradespensa"
+        android:gravity="center"
+        android:paddingRight="15dp"
+        android:text=""
         app:cornerRadius="40dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/btn_add_producto" />
+        app:layout_constraintBottom_toTopOf="@id/btn_add_producto"
+        app:layout_constraintEnd_toEndOf="@id/btn_add_producto"
+        app:layout_constraintStart_toStartOf="@id/btn_add_producto" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

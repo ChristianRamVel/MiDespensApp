@@ -29,17 +29,18 @@
             android:text="@string/stockminimo"
             android:textSize="15sp"
             android:textColor="@color/black"
-            android:layout_weight="0.5"
+            android:layout_weight="0.2"
             android:id="@+id/textoStockMinimo"
             />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/stock_actual"
-            android:layout_marginStart="22dp"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="100dp"
             android:textSize="15sp"
             android:textColor="@color/black"
-            android:layout_weight="7"
+            android:layout_weight="0.2"
             android:id="@+id/textoStockActual"
             />
 

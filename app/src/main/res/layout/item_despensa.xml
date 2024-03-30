@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:background="@color/colorDeFondo"
+    android:padding="5dp"
     >
 
 
@@ -11,19 +12,22 @@
         android:id="@+id/nombreProducto"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.95"
+        android:layout_weight="1"
         android:layout_marginStart="5dp"
         android:text="@string/producto"
         android:textColor="@color/black"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:textSize="20sp" />
 
     <TextView
         android:id="@+id/textoStockMinimo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.75"
+        android:layout_weight="0.3"
+        android:paddingHorizontal="15dp"
         android:enabled="false"
-        android:text="@string/stockminimo"
+        android:text="0"
         android:textColor="@color/black"
         android:textSize="20sp" />
 
@@ -31,8 +35,8 @@
         android:id="@+id/textoStockActual"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.75"
-        android:text="@string/stock_actual"
+        android:layout_weight="0.15"
+        android:text="0"
         android:textColor="@color/black"
         android:textSize="20sp" />
 

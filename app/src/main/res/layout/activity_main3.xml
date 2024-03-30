@@ -34,8 +34,6 @@
 
 
 
-
-
     <EditText
         android:id="@+id/cantidadAComprar"
         android:layout_width="match_parent"
