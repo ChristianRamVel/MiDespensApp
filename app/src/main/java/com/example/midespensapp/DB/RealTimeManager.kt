@@ -4,7 +4,11 @@ import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 
 class RealTimeManager {
@@ -86,6 +90,38 @@ class RealTimeManager {
                     callback.onProductosObtenidos(productosDespensa)
                 } else {
                     callback.onError(DatabaseError("No se encontraron productos en la despensa."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
+    //obtenerProductosListaCompra
+    fun obtenerProductosListaCompra(casaId: String, callback: ObtenerProductosListaCompraCallBack) {
+        val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
+
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosListaCompra = mutableListOf<ProductoListaCompra>()
+
+                    for (productoSnapshot in snapshot.children) {
+                        val nombre = productoSnapshot.child("nombre").getValue(String::class.java)
+                        val cantidad = productoSnapshot.child("cantidadAComprar").getValue(Int::class.java)
+                        val comprado = productoSnapshot.child("comprado").getValue(Boolean::class.java)
+
+                        if (nombre != null && cantidad != null && comprado != null) {
+                            val producto = ProductoListaCompra(nombre, cantidad, comprado)
+                            productosListaCompra.add(producto)
+                        }
+                    }
+
+                    callback.onProductosObtenidos(productosListaCompra)
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
                 }
             }
 

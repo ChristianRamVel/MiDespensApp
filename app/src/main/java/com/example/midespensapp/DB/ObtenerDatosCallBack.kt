@@ -3,9 +3,6 @@ package com.example.midespensapp.DB
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseException
-import kotlin.Exception
 
 interface CrearCasaCallBack {
     fun onCasaCreada(casa: Casa)
@@ -18,7 +15,7 @@ interface ObtenerProductosDespensaCallBack {
 
 interface ObtenerProductosListaCompraCallBack {
     fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>,)
-    fun onError(error: DatabaseError)
+    fun onError(error: Exception?)
 }
 
 interface ObtenerCasaPorIdUsuarioCallBack {

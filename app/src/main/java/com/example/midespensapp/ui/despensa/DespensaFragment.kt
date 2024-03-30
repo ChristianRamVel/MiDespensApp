@@ -21,7 +21,6 @@ import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import kotlin.Exception
 
 class DespensaFragment : Fragment() {
 
@@ -36,8 +35,6 @@ class DespensaFragment : Fragment() {
 
         val view = inflater.inflate(R.layout.fragment_despensa, container, false)
         lvListaProductos = view.findViewById(R.id.listViewDespensa)
-
-        //obtener los productos de la lista de la compra y mostrarlos en un log
 
         botonAnadirProducto = view.findViewById(R.id.btn_add_producto)
         botonAnadirProducto.setOnClickListener {
@@ -96,7 +93,6 @@ class DespensaFragment : Fragment() {
         BaseAdapter() {
         private val mContext: Context = context
         private val listaDeProductos: MutableList<ProductoDespensa> = listaProductos
-        private val realTimeManager = RealTimeManager()
 
         override fun getCount(): Int {
             return listaDeProductos.size
@@ -113,6 +109,7 @@ class DespensaFragment : Fragment() {
         override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
             val layoutInflater = LayoutInflater.from(mContext)
             val view = layoutInflater.inflate(R.layout.item_despensa, parent, false)
+
 
             val producto = listaDeProductos[position]
             val tvNombreProducto = view.findViewById<TextView>(R.id.nombreProducto)

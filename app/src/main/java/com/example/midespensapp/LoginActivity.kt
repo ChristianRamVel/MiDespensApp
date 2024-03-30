@@ -9,7 +9,6 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import com.example.midespensapp.DB.ComprobarCasaExisteCallBack
 import com.example.midespensapp.DB.CrearCasaCallBack
 import com.example.midespensapp.DB.RealTimeManager
@@ -113,6 +112,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn(email: String, password: String) {
+        //hacer una corrutina para logearse
+
         if (camposValidos(email, password)) {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->

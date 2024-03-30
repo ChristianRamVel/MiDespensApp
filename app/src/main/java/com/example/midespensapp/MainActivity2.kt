@@ -88,6 +88,12 @@ class MainActivity2 : AppCompatActivity() {
                         // 3. Crear un objeto ProductoDespensa con los datos proporcionados
                         val productoDespensa = ProductoDespensa(nombreProducto, cantidadActualProducto, cantidadMinimaProducto)
 
+                        //comprobamos si el producto ya existe en la despensa
+                        if(casa.productosDespensa.containsKey(nombreProducto)){
+                            //informar al usuario de que el producto ya existe en la despensa
+                            Toast.makeText(this@MainActivity2, "El producto ya existe en la despensa", Toast.LENGTH_SHORT).show()
+                        }
+
                         // 4. Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
                         databaseReference.child("casas").child(casa.id).child("productosDespensa").child(nombreProducto).setValue(productoDespensa)
                             .addOnSuccessListener {

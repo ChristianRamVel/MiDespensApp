@@ -6,7 +6,7 @@
     <string name="añadir">+</string>
     <string name="producto">producto</string>
     <string name="cantidad_en_stock">cantidad actual en stock</string>
-    <string name="cantidadParaComprar">Acomprar</string>
+    <string name="cantidadParaComprar">Cantidad a comprar</string>
     <string name="cantidadAlmacenada">cantidadAlmacenada</string>
     <string name="nombreProducto">nombre del producto</string>
     <string name="cantidadMinimaProducto">cantidad minima de stock</string>
@@ -33,4 +33,7 @@
     <string name="stock_actual">Actual</string>
     <string name="comprado">comprado</string>
     <string name="registar_prod_despensa_titulo">Registrar producto en despensa</string>
+    <string name="anadir_a_despensa">Añadir a despensa</string>
+    <string name="registar_prod_listaCompra_titulo">Registrar producto en lista de la compra</string>
+    <string name="guardar_en_despensa">Guardar en Despensa</string>
 </resources>
