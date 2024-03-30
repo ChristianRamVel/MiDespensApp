@@ -189,6 +189,44 @@ class RealTimeManager {
             }
     }
 
+    //funcion para borrar un producto de la lista de productosListaCompra de una casa
+
+    fun borrarProductoListaCompra(casaId: String, producto: ProductoListaCompra, callback: BorrarProductoDespensaCallBack) {
+        val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosListaCompra = snapshot.children.mapNotNull {
+                        it.getValue(ProductoListaCompra::class.java)
+                    }
+
+                    val productoAEliminar = productosListaCompra.find { it.nombre == producto.nombre }
+
+                    if (productoAEliminar != null) {
+                        val productoRef = query.child(productoAEliminar.nombre)
+                        productoRef.removeValue()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    callback.onProductoBorrado()
+                                } else {
+                                    callback.onError(task.exception)
+                                }
+                            }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la lista de la compra."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
     private fun DatabaseError(s: String): Exception? {
         return null
     }

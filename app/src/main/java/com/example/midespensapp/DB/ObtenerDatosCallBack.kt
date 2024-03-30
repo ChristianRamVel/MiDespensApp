@@ -27,3 +27,8 @@ interface ComprobarCasaExisteCallBack {
     fun onCasaExiste(existe: Boolean)
     fun onError(error: Exception?)
 }
+
+interface BorrarProductoDespensaCallBack {
+    fun onProductoBorrado()
+    fun onError(error: Exception?)
+}

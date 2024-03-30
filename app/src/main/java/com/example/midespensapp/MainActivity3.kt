@@ -19,17 +19,24 @@ import com.google.firebase.database.FirebaseDatabase
 class MainActivity3 : AppCompatActivity() {
 
     private val realTimeManager = RealTimeManager()
+    private lateinit var etNombreProducto: EditText
+    private lateinit var etCantidadMinimaProducto: EditText
+    private lateinit var etCantidadActualProducto: EditText
+    private lateinit var etCantidadAComprar: EditText
+    private lateinit var botonRegistrar: Button
+    private lateinit var checkbox: CheckBox
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main3)
 
-        val etNombreProducto = findViewById<EditText>(R.id.nombreProducto)
-        val etCantidadMinimaProducto = findViewById<EditText>(R.id.cantidadMinimaStock)
-        val etCantidadActualProducto = findViewById<EditText>(R.id.cantidadActual)
-        val etCantidadAComprar = findViewById<EditText>(R.id.cantidadAComprar)
-        val botonRegistrar = findViewById<Button>(R.id.botonRegistrarEnDespensa)
-        val checkbox = findViewById<CheckBox>(R.id.checkBox)
+        etNombreProducto = findViewById<EditText>(R.id.nombreProducto)
+        etCantidadMinimaProducto = findViewById<EditText>(R.id.cantidadMinimaStock)
+        etCantidadActualProducto = findViewById<EditText>(R.id.cantidadActual)
+        etCantidadAComprar = findViewById<EditText>(R.id.cantidadAComprar)
+        botonRegistrar = findViewById<Button>(R.id.botonRegistrarEnDespensa)
+        checkbox = findViewById<CheckBox>(R.id.checkBox)
 
         checkbox.setOnClickListener {
             if (checkbox.isChecked) {
@@ -46,130 +53,124 @@ class MainActivity3 : AppCompatActivity() {
         botonRegistrar.setOnClickListener {
             val nombreProducto = etNombreProducto.text.toString()
             val cantidadAComprarStr = etCantidadAComprar.text.toString()
-            //comprobar si el checkbox esta marcado
+
             if (!checkbox.isChecked) {
-                when {
-                    nombreProducto.isEmpty() -> {
-                        etNombreProducto.error = "El nombre del producto no puede estar vacío"
-                        Toast.makeText(
-                            this,
-                            "El nombre del producto no puede estar vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    cantidadAComprarStr.isEmpty() -> {
-                        etCantidadAComprar.error = "La cantidad a comprar no puede estar vacía"
-                        Toast.makeText(
-                            this,
-                            "La cantidad a comprar no puede estar vacía",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    else -> {
-                        var cantidadAComprar = cantidadAComprarStr.toInt()
-                        if (cantidadAComprar <= 0) {
-                            etCantidadAComprar.error =
-                                "La cantidad a comprar no puede ser 0 o negativa"
-                            Toast.makeText(
-                                this,
-                                "La cantidad a comprar no puede ser 0 o negativa",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
-                        }
-                    }
+                if (validarNombreProducto(nombreProducto) && validarCantidadAComprar(
+                        cantidadAComprarStr
+                    )
+                ) {
+                    val cantidadAComprar = cantidadAComprarStr.toInt()
+                    guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
                 }
             } else {
                 val cantidadMinimaProductoStr = etCantidadMinimaProducto.text.toString()
                 val cantidadActualProductoStr = etCantidadActualProducto.text.toString()
-                when {
-                    nombreProducto.isEmpty() -> {
-                        etNombreProducto.error = "El nombre del producto no puede estar vacío"
-                        Toast.makeText(
-                            this,
-                            "El nombre del producto no puede estar vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
 
-                    cantidadMinimaProductoStr.isEmpty() -> {
-                        etCantidadMinimaProducto.error =
-                            "La cantidad mínima de stock no puede estar vacía"
-                        Toast.makeText(
-                            this,
-                            "La cantidad mínima de stock no puede estar vacía",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                if (validarNombreProducto(nombreProducto) && validarCantidadMinima(
+                        cantidadMinimaProductoStr
+                    ) &&
+                    validarCantidadActual(cantidadActualProductoStr) && validarCantidadAComprar(
+                        cantidadAComprarStr
+                    )
+                ) {
 
-                    cantidadActualProductoStr.isEmpty() -> {
-                        etCantidadActualProducto.error =
-                            "La cantidad actual de stock no puede estar vacía"
-                        Toast.makeText(
-                            this,
-                            "La cantidad actual de stock no puede estar vacía",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
+                    val cantidadActualProducto = cantidadActualProductoStr.toInt()
+                    val cantidadAComprar = cantidadAComprarStr.toInt()
 
-                    cantidadAComprarStr.isEmpty() -> {
-                        etCantidadAComprar.error = "La cantidad a comprar no puede estar vacía"
-                        Toast.makeText(
-                            this,
-                            "La cantidad a comprar no puede estar vacía",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    else -> {
-                        var cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
-                        var cantidadActualProducto = cantidadActualProductoStr.toInt()
-                        var cantidadAComprar = cantidadAComprarStr.toInt()
-                        if (cantidadMinimaProducto <= 0) {
-                            etCantidadMinimaProducto.error =
-                                "La cantidad mínima de stock no puede ser 0 o negativa"
-                            Toast.makeText(
-                                this,
-                                "La cantidad mínima de stock no puede ser 0 o negativa",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else if (cantidadActualProducto <= 0) {
-                            etCantidadActualProducto.error =
-                                "La cantidad actual de stock no puede ser 0 o negativa"
-                            Toast.makeText(
-                                this,
-                                "La cantidad actual de stock no puede ser 0 o negativa",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else if (cantidadAComprar <= 0) {
-                            etCantidadAComprar.error =
-                                "La cantidad a comprar no puede ser 0 o negativa"
-                            Toast.makeText(
-                                this,
-                                "La cantidad a comprar no puede ser 0 o negativa",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            guardarProductoEnDespensa(
-                                nombreProducto,
-                                cantidadMinimaProducto,
-                                cantidadActualProducto,
-                            )
-                            guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
-                        }
-                    }
+                    guardarProductoEnDespensa(
+                        nombreProducto,
+                        cantidadMinimaProducto,
+                        cantidadActualProducto
+                    )
+                    guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
                 }
             }
         }
 
 
     }
+    internal fun validarNombreProducto(nombreProducto: String): Boolean {
+        return if (nombreProducto.isEmpty()) {
+            etNombreProducto.error = "El nombre del producto no puede estar vacío"
+            Toast.makeText(
+                this,
+                "El nombre del producto no puede estar vacío",
+                Toast.LENGTH_SHORT
+            ).show()
+            false
+        } else {
+            true
+        }
+    }
+
+    internal fun validarCantidadAComprar(cantidadAComprarStr: String): Boolean {
+        return if (cantidadAComprarStr.isEmpty()) {
+            etCantidadAComprar.error = "La cantidad a comprar no puede estar vacía"
+            Toast.makeText(
+                this,
+                "La cantidad a comprar no puede estar vacía",
+                Toast.LENGTH_SHORT
+            ).show()
+            false
+        } else {
+            val cantidadAComprar = cantidadAComprarStr.toInt()
+            if (cantidadAComprar <= 0) {
+                etCantidadAComprar.error = "La cantidad a comprar no puede ser 0 o negativa"
+                Toast.makeText(
+                    this,
+                    "La cantidad a comprar no puede ser 0 o negativa",
+                    Toast.LENGTH_SHORT
+                ).show()
+                false
+            } else {
+                true
+            }
+        }
+    }
+
+    internal fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
+        return if (cantidadMinimaProductoStr.isEmpty()) {
+            etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede estar vacía"
+            Toast.makeText(
+                this,
+                "La cantidad mínima de stock no puede estar vacía",
+                Toast.LENGTH_SHORT
+            ).show()
+            false
+        } else {
+            val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
+            if (cantidadMinimaProducto <= 0) {
+                etCantidadMinimaProducto.error =
+                    "La cantidad mínima de stock no puede ser 0 o negativa"
+                Toast.makeText(
+                    this,
+                    "La cantidad mínima de stock no puede ser 0 o negativa",
+                    Toast.LENGTH_SHORT
+                ).show()
+                false
+            } else {
+                true
+            }
+        }
+    }
+
+    internal fun validarCantidadActual(cantidadActualProductoStr: String): Boolean {
+        return if (cantidadActualProductoStr.isEmpty()) {
+            etCantidadActualProducto.error = "La cantidad actual de stock no puede estar vacía"
+            Toast.makeText(
+                this,
+                "La cantidad actual de stock no puede estar vacía",
+                Toast.LENGTH_SHORT
+            ).show()
+            false
+        } else {
+            true
+        }
+    }
 
     //funcion para guardar producto en productosListaCompra
-    private fun guardarProductoEnListaCompra(nombreProducto: String, cantidadAComprar: Int) {
+    internal fun guardarProductoEnListaCompra(nombreProducto: String, cantidadAComprar: Int) {
         // 1. Obtener referencia a la base de datos Firebase
         val databaseReference = FirebaseDatabase.getInstance().reference
 
@@ -194,10 +195,9 @@ class MainActivity3 : AppCompatActivity() {
                                     "Producto guardado en la lista de la compra correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                finish()
-                            }
-                            .addOnFailureListener { e ->
 
+                            }
+                            .addOnFailureListener {
                                 Toast.makeText(
                                     this@MainActivity3,
                                     "Error al guardar el producto en la lista de la compra",
@@ -231,7 +231,7 @@ class MainActivity3 : AppCompatActivity() {
     }
 
     //funcion para guardar producto en despensa
-    private fun guardarProductoEnDespensa(
+    internal fun guardarProductoEnDespensa(
         nombreProducto: String,
         cantidadMinimaProducto: Int,
         cantidadActualProducto: Int
@@ -266,8 +266,7 @@ class MainActivity3 : AppCompatActivity() {
                                 ).show()
                                 finish()
                             }
-                            .addOnFailureListener { e ->
-
+                            .addOnFailureListener {
                                 Toast.makeText(
                                     this@MainActivity3,
                                     "Error al guardar el producto en la despensa",

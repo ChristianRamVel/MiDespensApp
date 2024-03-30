@@ -30,7 +30,8 @@
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/cantidadAComprar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="Autofill" />
 
 
 
@@ -41,11 +42,11 @@
         android:hint="@string/cantidadParaComprar"
         android:inputType="number"
         android:visibility="visible"
-        android:allowClickWhenDisabled="true"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/checkBox"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nombreProducto" />
+        app:layout_constraintTop_toBottomOf="@id/nombreProducto"
+        tools:ignore="Autofill" />
 
 
     <CheckBox
@@ -70,7 +71,9 @@
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cantidadActual"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/checkBox" />
+        app:layout_constraintTop_toBottomOf="@id/checkBox"
+        tools:ignore="Autofill"
+        />
 
 
     <EditText
@@ -83,7 +86,9 @@
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/botonRegistrarEnDespensa"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cantidadMinimaStock" />
+        app:layout_constraintTop_toBottomOf="@id/cantidadMinimaStock"
+        tools:ignore="Autofill"
+        />
 
 
 

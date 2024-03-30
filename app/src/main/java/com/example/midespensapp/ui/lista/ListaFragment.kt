@@ -14,6 +14,7 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
 import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
 import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
 import com.example.midespensapp.DB.RealTimeManager
@@ -33,7 +34,9 @@ class ListaFragment : Fragment() {
     private lateinit var lvListaProductos: ListView
     private val realTimeManager = RealTimeManager()
     private lateinit var botonAnadirProducto: Button
-    private lateinit var botonAnadirDespensa: Button
+    lateinit var botonAnadirDespensa: Button
+    lateinit var botonBorrarProductosSeleccionados: Button
+    var alMenosUnProductoSeleccionado = false
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -43,6 +46,7 @@ class ListaFragment : Fragment() {
         lvListaProductos = view.findViewById(R.id.lvListaCompra)
         botonAnadirProducto = view.findViewById(R.id.btn_add_producto)
         botonAnadirDespensa = view.findViewById(R.id.btn_añadir_seleccionados_despensa)
+        botonBorrarProductosSeleccionados = view.findViewById(R.id.btn_borrar_seleccionados)
 
         botonAnadirProducto.setOnClickListener {
             val intent = Intent(context, MainActivity3::class.java)
@@ -51,8 +55,6 @@ class ListaFragment : Fragment() {
         botonAnadirDespensa.setOnClickListener {
 
             for (i in 0 until lvListaProductos.count) {
-                val view = lvListaProductos.adapter.getView(i, null, lvListaProductos)
-                val checkBox = view.findViewById<CheckBox>(R.id.checkBox)
                 val producto = lvListaProductos.adapter.getItem(i) as ProductoListaCompra
                 if (producto.comprado) {
                     guardarProductoEnDespensaDesdeLista(producto.nombre,producto.cantidadAComprar)
@@ -60,7 +62,15 @@ class ListaFragment : Fragment() {
             }
         }
 
-
+        botonBorrarProductosSeleccionados.setOnClickListener {
+            for (i in 0 until lvListaProductos.count) {
+                val producto = lvListaProductos.adapter.getItem(i) as ProductoListaCompra
+                if (producto.comprado) {
+                    borrarProductoEnListaCompra(producto)
+                }
+            }
+            listarProductosListaCompra()
+        }
         //obtener los productos de la lista de la compra y mostrarlos en un log
         listarProductosListaCompra()
 
@@ -77,6 +87,33 @@ class ListaFragment : Fragment() {
             // Handle the case when the user is not logged in
             Log.e("DespensaFragment", "User not logged in")
         }
+    }
+
+    private fun borrarProductoEnListaCompra(producto: ProductoListaCompra) {
+        getCasaForCurrentUser(object : ObtenerCasaPorIdUsuarioCallBack {
+            override fun onCasaObtenida(casa: Casa?) {
+                if (casa != null) {
+                    Log.d("CompraFragment", "Casa obtenida: ${casa.id}")
+                    realTimeManager.borrarProductoListaCompra(casa.id, producto, object :
+                        BorrarProductoDespensaCallBack {
+
+                        override fun onProductoBorrado() {
+                            Log.d("CompraFragment", "Producto borrado de la lista de la compra correctamente")
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Log.e("CompraFragment", "Error borrando producto: ${error?.message}")
+                        }
+                    })
+                } else {
+                    Log.e("CompraFragment", "No se encontró la casa para el usuario actual")
+                }
+            }
+
+            override fun onError(error: Exception?) {
+                Log.e("CompraFragment", "Error obteniendo casa: ${error?.message}")
+            }
+        })
     }
 
 
@@ -209,7 +246,6 @@ class ListaFragment : Fragment() {
                 }
             }
 
-
             tvNombreProducto.text = producto.nombre
             tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
@@ -231,6 +267,8 @@ class ListaFragment : Fragment() {
 
             return view
         }
+
+
     }
 
 }
