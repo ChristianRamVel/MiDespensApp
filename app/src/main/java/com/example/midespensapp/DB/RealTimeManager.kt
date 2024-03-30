@@ -1,12 +1,8 @@
 package com.example.midespensapp.DB
 
-import android.content.ContentValues.TAG
-import android.util.Log
-import android.widget.Toast
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoDespensa
 import com.example.midespensapp.clases.ProductoListaCompra
-import com.example.midespensapp.clases.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 
@@ -14,376 +10,151 @@ import com.google.firebase.database.*
 class RealTimeManager {
     private val databaseReference =
         FirebaseDatabase.getInstance("https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app").reference
-    private val mAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val database = FirebaseDatabase.getInstance()
+    private val auth = FirebaseAuth.getInstance()
 
-    //segun este Json, crear los metodos para obtener los datos de la base de datos
-    /*
-{
-    "casas": [
-    {
-        "id": "casa1",
-        "productosDespensa": [
-        {
-            "nombre": "Leche",
-            "stockActual": 8,
-            "stockMinimo": 5
-        },
-        {
-            "nombre": "Pan",
-            "stockActual": 3,
-            "stockMinimo": 2
-        }
-        ],
-        "productosListaCompra": [
-        {
-            "cantidadAComprar": 1,
-            "comprado": false,
-            "nombre": "Huevos"
-        },
-        {
-            "cantidadAComprar": 2,
-            "comprado": true,
-            "nombre": "Frutas"
-        }
-        ]
-    },
-    {
-        "id": "casa2",
-        "productosDespensa": [
-        {
-            "nombre": "Leche",
-            "stockActual": 8,
-            "stockMinimo": 5
-        }
-        ],
-        "productosListaCompra": [
-        {
-            "cantidadAComprar": 1,
-            "comprado": false,
-            "nombre": "Huevos"
-        }
-        ]
-    }
-    ],
-    "usuarios": [
-    {
-        "email": "usuario1@example.com",
-        "idCasa": "casa1",
-        "idUsuario": "usuario1"
-    },
-    {
-        "email": "usuario2@example.com",
-        "idCasa": "casa2",
-        "idUsuario": "usuario2"
-    }
-    ]
-}*/
-
-    fun obtenerProductosDespensaPorIdCasa(
-        idCasa: String,
-        callback: ObtenerProductosDespensaCallBack
-    ) {
-        val productosDespensaReference =
-            databaseReference.child("casas").child(idCasa).child("productosDespensa")
-        productosDespensaReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosDespensa =
-                    dataSnapshot.children.mapNotNull { it.getValue(ProductoDespensa::class.java) }
-                callback.onProductosObtenidos(productosDespensa.toMutableList())
-                Log.d("RealTimeManager", "Productos de la despensa obtenidos: $productosDespensa")
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                callback.onError(databaseError)
-            }
-        })
+    // Write data to the database
+    fun writeData(reference: DatabaseReference, data: Map<String, Any>) {
+        reference.setValue(data)
     }
 
-    fun obtenerProductosListaCompraPorIdCasa(
-        idCasa: String,
-        callback: ObtenerProductosListaCompraCallBack
-    ) {
-        val productosListaCompraReference =
-            databaseReference.child("casas").child(idCasa).child("productosListaCompra")
-        productosListaCompraReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosListaCompra =
-                    dataSnapshot.children.mapNotNull { it.getValue(ProductoListaCompra::class.java) }
-                callback.onProductosObtenidos(productosListaCompra.toMutableList())
-                Log.d(
-                    "RealTimeManager",
-                    "Productos de la lista de la compra obtenidos: $productosListaCompra"
-                )
-            }
+    // Read data from the database
+    fun readData(reference: DatabaseReference, listener: ValueEventListener) {
+        reference.addValueEventListener(listener)
+    }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                callback.onError(databaseError)
-            }
-        })
+    // Update data in the database
+    fun updateData(reference: DatabaseReference, data: Map<String, Any>) {
+        reference.updateChildren(data)
+    }
+
+    // Delete data from the database
+    fun deleteData(reference: DatabaseReference) {
+        reference.removeValue()
     }
 
 
-    fun obtenerCasaPorIdUsuario(idUsuario: String, callback: ObtenerCasaPorIdUsuarioCallBack) {
-        val casaReference =
-            databaseReference.child("usuarios").orderByChild("idUsuario").equalTo(idUsuario)
-        casaReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val casa = dataSnapshot.children.mapNotNull { it.getValue(Usuario::class.java) }
-                    .firstOrNull()?.idCasa
-                if (casa != null) {
-                    databaseReference.child("casas").child(casa)
-                        .addListenerForSingleValueEvent(object : ValueEventListener {
-                            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                                val casaObtenida = dataSnapshot.getValue(Casa::class.java)
-                                callback.onCasaObtenida(casaObtenida!!)
-                                Log.d("RealTimeManager", "Casa obtenida: $casaObtenida")
+    fun obtenerCasaPorIdUsuario(userKey: String, callback: ObtenerCasaPorIdUsuarioCallBack) {
+        val usuariosReference = database.getReference("usuarios")
+        usuariosReference.child(userKey).get().addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val snapshot = task.result
+                if (snapshot.exists()) {
+                    val idCasa = snapshot.child("idCasa").value.toString()
+                    val casasReference = database.getReference("casas")
+                    casasReference.child(idCasa).get().addOnCompleteListener { innerTask ->
+                        if (innerTask.isSuccessful) {
+                            val innerSnapshot = innerTask.result
+                            if (innerSnapshot.exists()) {
+                                val casa = Casa(idCasa)
+                                callback.onCasaObtenida(casa)
+                            } else {
+                                callback.onError(DatabaseError("No se encontró la casa asociada al usuario."))
                             }
-
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                callback.onError(databaseError)
-                            }
-                        })
+                        } else {
+                            callback.onError(innerTask.exception)
+                        }
+                    }
                 } else {
-                    callback.onError(DatabaseError.fromException(Exception("No se ha encontrado la casa")))
+                    callback.onError(DatabaseError("No se encontró el usuario."))
+                }
+            } else {
+                callback.onError(task.exception)
+            }
+        }
+    }
+
+    fun obtenerProductosDespensa(casaId: String, callback: ObtenerProductosDespensaCallBack) {
+        val query = database.reference.child("casas").child(casaId).child("productosDespensa")
+
+        query.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosDespensa = mutableListOf<ProductoDespensa>()
+
+                    for (productoSnapshot in snapshot.children) {
+                        val nombre = productoSnapshot.child("nombre").getValue(String::class.java)
+                        val stockActual = productoSnapshot.child("stockActual").getValue(Int::class.java)
+                        val stockMinimo = productoSnapshot.child("stockMinimo").getValue(Int::class.java)
+
+                        if (nombre != null && stockActual != null && stockMinimo != null) {
+                            val producto = ProductoDespensa(nombre, stockActual, stockMinimo)
+                            productosDespensa.add(producto)
+                        }
+                    }
+
+                    callback.onProductosObtenidos(productosDespensa)
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la despensa."))
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                callback.onError(databaseError)
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
             }
         })
     }
 
-    fun guardarUsuario(email: String, idCasa: String) {
-        val currentUser = mAuth.currentUser
-        val userId = currentUser?.uid
+    fun comprobarCasaExiste(casaId: String, callback: ComprobarCasaExisteCallBack) {
+        val query = database.reference.child("casas").child(casaId)
 
-        userId?.let {
-            val usuario = Usuario(idUsuario = it, email = email, idCasa = idCasa)
-            databaseReference.child("usuarios").child(it).setValue(usuario)
-                .addOnSuccessListener {
-                    // La información del usuario se guardó correctamente
-                }
-                .addOnFailureListener { exception ->
-                    // Ocurrió un error al guardar la información del usuario
-                    // Manejar el error
-                }
-        }
-
-
-    }
-
-    fun crearCasaNueva(): Casa {
-        val casa = Casa()
-        val key = databaseReference.child("casas").push().key
-        key?.let {
-            casa.id = it
-            databaseReference.child("casas").child(it).setValue(casa)
-                .addOnSuccessListener {
-                    crearProductosdespensaParaCasaNueva(casa.id!!)
-                    crearProductosListaCompraParaCasaNueva(casa.id!!)
-                }
-                .addOnFailureListener { exception ->
-                    // Ocurrió un error al guardar la información de la casa
-                    // Manejar el error
-                }
-        }
-        return casa
-    }
-
-    fun crearProductosdespensaParaCasaNueva(idCasa: String) {
-        val productosDespensa = listOf(
-            ProductoDespensa("Leche", 8, 5),
-            ProductoDespensa("Pan", 3, 2)
-        )
-        databaseReference.child("casas").child(idCasa).child("productosDespensa")
-            .setValue(productosDespensa)
-            .addOnSuccessListener {
-                // Los productos de la despensa se guardaron correctamente
-            }
-            .addOnFailureListener { exception ->
-                // Ocurrió un error al guardar los productos de la despensa
-                // Manejar el error
-            }
-    }
-
-    fun crearProductosListaCompraParaCasaNueva(idCasa: String) {
-        val productosListaCompra = listOf(
-            ProductoListaCompra("leche", 1, false),
-            ProductoListaCompra("pan", 2, false)
-        )
-        databaseReference.child("casas").child(idCasa).child("productosListaCompra")
-            .setValue(productosListaCompra)
-            .addOnSuccessListener {
-                // Los productos de la lista de la compra se guardaron correctamente
-            }
-            .addOnFailureListener { exception ->
-                // Ocurrió un error al guardar los productos de la lista de la compra
-                // Manejar el error
-            }
-    }
-
-    fun comprobarSiCasaExistePorIDCasa(idCasa: String, callback: ComprobarSiCasaExisteCallBack) {
-        val casaReference = databaseReference.child("casas").child(idCasa)
-        casaReference.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
                     callback.onCasaExiste(true)
-                    Log.d("Firebase", "La casa existe")
                 } else {
-                    callback.onCasaNoExiste(false)
-                    Log.d("Firebase", "La casa no existe")
+                    callback.onCasaExiste(false)
                 }
             }
 
-            override fun onCancelled(databaseError: DatabaseError) {
-                callback.onError(databaseError)
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
             }
         })
     }
 
-    //funcion para aumentar en 1 la cantidad de un producto en la lista de la compra, este producto ya existe, a is que es un update
+    //funcion para crear una nueva casa y añadirla a la lista de casas de la base de datos, tendra su id, una lista de productosDespensa y una lista de productosListaCompra
+    //la lista de productosDespensa y productosListaCompra tendran un producto por defecto (pan,2,3) y (leche,1,2) respectivamente
+    fun crearCasa(callback: CrearCasaCallBack) {
+        val casaRef = databaseReference.child("casas").push() // Genera una nueva clave única
+        val casaId = casaRef.key // Obtiene la clave generada
+        val casa = Casa(casaId!!, mapOf(), mapOf()) // Crea una nueva casa con la clave generada
 
-    fun aumentarCantidadAComprarCompra(casaId: String, productoNombre: String) {
-        Log.d(
-            "Firebase",
-            "Comenzando a aumentar la cantidad a comprar del producto $productoNombre en la casa $casaId"
-        )
+        val productosDespensa = mutableMapOf("pan" to ProductoDespensa("pan", 2, 3))
+        val productosListaCompra = mutableMapOf("leche" to ProductoListaCompra("leche", 1, false))
 
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
+        casaRef.setValue(casa)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val productosRef = databaseReference.child("casas")
+                        .child(casaId) // Referencia a la casa recién creada
 
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosListaCompra = dataSnapshot.getValue(object :
-                    GenericTypeIndicator<List<ProductoListaCompra>>() {})
-                Log.d("Firebase", "Datos obtenidos de Firebase: $productosListaCompra")
-
-                productosListaCompra?.forEach { producto ->
-                    if (producto.nombre == productoNombre) {
-                        producto.cantidadAComprar = producto.cantidadAComprar!! + 1
-                        Log.d(
-                            "Firebase",
-                            "Nueva cantidad a comprar para $productoNombre: ${producto.cantidadAComprar}"
-                        )
-
-                        ref.child(productosListaCompra.indexOf(producto).toString())
-                            .child("cantidadAComprar").setValue(producto.cantidadAComprar)
-                        Log.d(
-                            "Firebase",
-                            "Cantidad a comprar actualizada correctamente en Firebase"
-                        )
-
-                        return@forEach
-                    }
-                }
-                Log.d("Firebase", "Producto $productoNombre no encontrado en la lista de compra")
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("Firebase", "Error al acceder a Firebase: ${databaseError.message}")
-                // Manejar error
-            }
-        })
-    }
-
-    fun disminuirCantidadAComprarCompra(casaId: String, productoNombre: String) {
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.getReference("casas").child(casaId).child("productosListaCompra")
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosListaCompra = dataSnapshot.getValue(object :
-                    GenericTypeIndicator<List<ProductoListaCompra>>() {})
-
-                productosListaCompra?.forEach { producto ->
-                    if (producto.nombre == productoNombre) {
-                        if (producto.cantidadAComprar!! > 0) {
-                            producto.cantidadAComprar = producto.cantidadAComprar!! - 1
-                            ref.child(productosListaCompra.indexOf(producto).toString())
-                                .child("cantidadAComprar").setValue(producto.cantidadAComprar)
+                    // Añade productosDespensa a la casa
+                    productosRef.child("productosDespensa").setValue(productosDespensa)
+                        .addOnCompleteListener { innerTask ->
+                            if (innerTask.isSuccessful) {
+                                // Añade productosListaCompra a la casa
+                                productosRef.child("productosListaCompra")
+                                    .setValue(productosListaCompra)
+                                    .addOnCompleteListener { innerInnerTask ->
+                                        if (innerInnerTask.isSuccessful) {
+                                            callback.onCasaCreada(casa)
+                                        } else {
+                                            callback.onError(innerInnerTask.exception)
+                                        }
+                                    }
+                            } else {
+                                callback.onError(innerTask.exception)
+                            }
                         }
-                        return@forEach
-                    }
+                } else {
+                    callback.onError(task.exception)
                 }
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Manejar error
-            }
-        })
     }
 
-
-    fun aumentarCantidadAComprarDespensa(casaId: String, productoNombre: String) {
-        Log.d(
-            "Firebase",
-            "Comenzando a aumentar la cantidad en stock $productoNombre en la casa $casaId"
-        )
-
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.getReference("casas").child(casaId).child("productosDespensa")
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosDespensa = dataSnapshot.getValue(object :
-                    GenericTypeIndicator<List<ProductoDespensa>>() {})
-                Log.d("Firebase", "Datos obtenidos de Firebase: $productosDespensa")
-
-                productosDespensa?.forEach { producto ->
-                    if (producto.nombre == productoNombre) {
-                        producto.stockActual = producto.stockActual!! + 1
-                        Log.d(
-                            "Firebase",
-                            "Nueva cantidad de stock $productoNombre: ${producto.stockActual}"
-                        )
-
-                        ref.child(productosDespensa.indexOf(producto).toString())
-                            .child("stockActual").setValue(producto.stockActual)
-                        Log.d(
-                            "Firebase",
-                            "Cantidad a comprar actualizada correctamente en Firebase"
-                        )
-
-                        return@forEach
-                    }
-                }
-                Log.d("Firebase", "Producto $productoNombre no encontrado en la lista de compra")
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                Log.e("Firebase", "Error al acceder a Firebase: ${databaseError.message}")
-                // Manejar error
-            }
-        })
+    private fun DatabaseError(s: String): Exception? {
+        return null
     }
-
-    fun disminuirCantidadAComprarDespensa(casaId: String, productoNombre: String) {
-        val database = FirebaseDatabase.getInstance()
-        val ref = database.getReference("casas").child(casaId).child("productosDespensa")
-
-        ref.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val productosDespensa = dataSnapshot.getValue(object :
-                    GenericTypeIndicator<List<ProductoDespensa>>() {})
-
-                productosDespensa?.forEach { producto ->
-                    if (producto.nombre == productoNombre) {
-                        if (producto.stockActual!! > 0) {
-                            producto.stockActual = producto.stockActual!! - 1
-                            ref.child(productosDespensa.indexOf(producto).toString())
-                                .child("stockActual").setValue(producto.stockActual)
-                        }
-                        return@forEach
-                    }
-                }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Manejar error
-            }
-        })
-    }
-
 
 }

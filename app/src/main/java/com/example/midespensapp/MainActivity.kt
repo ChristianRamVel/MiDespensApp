@@ -40,14 +40,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
             )
         )
-        // Inicializar el botón después de inflar la vista del fragmento
-        val botonAnadirProducto = findViewById<TextView>(R.id.btn_add_producto)
 
-        // Configurar el OnClickListener para el botón
-        botonAnadirProducto.setOnClickListener {
-            val intent = Intent(this, MainActivity2::class.java)
-            startActivity(intent)
-        }
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 

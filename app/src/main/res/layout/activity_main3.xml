@@ -5,8 +5,20 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity2"
-    >
+    tools:context=".MainActivity3">
+
+
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/registar_prod_despensa_titulo"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
         android:id="@+id/nombreProducto"
@@ -15,9 +27,39 @@
         android:hint="@string/nombreProducto"
         android:inputType="text"
         android:layout_marginHorizontal="20dp"
-        app:layout_constraintBottom_toTopOf="@id/cantidadMinimaStock"
+        app:layout_constraintBottom_toTopOf="@id/cantidadAComprar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+
+    <EditText
+        android:id="@+id/cantidadAComprar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/cantidadParaComprar"
+        android:inputType="number"
+        android:visibility="visible"
+        android:allowClickWhenDisabled="true"
+        android:layout_marginHorizontal="20dp"
+        app:layout_constraintBottom_toTopOf="@id/checkBox"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nombreProducto" />
+
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/checkbox"
+        android:id="@+id/checkBox"
+        app:layout_constraintTop_toBottomOf="@id/cantidadAComprar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/cantidadMinimaStock"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+
 
     <EditText
         android:id="@+id/cantidadMinimaStock"
@@ -26,9 +68,10 @@
         android:hint="@string/cantidadMinimaProducto"
         android:inputType="number"
         android:layout_marginHorizontal="20dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/cantidadActual"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nombreProducto" />
+        app:layout_constraintTop_toBottomOf="@id/checkBox" />
 
 
     <EditText
@@ -37,33 +80,11 @@
         android:layout_height="wrap_content"
         android:hint="@string/cantidad_en_stock"
         android:inputType="number"
-        android:allowClickWhenDisabled="true"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintBottom_toTopOf="@id/checkBox"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cantidadMinimaStock" />
-
-    <CheckBox
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/checkbox"
-        android:id="@+id/checkBox"
-        app:layout_constraintTop_toBottomOf="@id/cantidadActual"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/cantidadAComprar"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <EditText
-        android:id="@+id/cantidadAComprar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="@string/cantidadParaComprar"
-        android:inputType="number"
         android:visibility="gone"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/botonRegistrarEnDespensa"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/checkBox" />
+        app:layout_constraintTop_toBottomOf="@id/cantidadMinimaStock" />
 
 
 
@@ -75,6 +96,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cantidadAComprar" />
+        app:layout_constraintTop_toBottomOf="@id/cantidadActual" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,16 +1,13 @@
 package com.example.midespensapp.clases
 
-data class Usuario(
-    var idUsuario: String? = null,
-    var email: String? = null,
-    var idCasa: String? = null
-) {
-    // Función para convertir un objeto Usuario a un mapa
-    fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "idUsuario" to idUsuario,
-            "email" to email,
-            "idCasa" to idCasa
-        )
-    }
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+
+class Usuario(
+    @SerializedName("email") val email: String = "",
+    @SerializedName("idCasa") val idCasa: String = "",
+
+)
+{
+    constructor() : this("", "")
 }

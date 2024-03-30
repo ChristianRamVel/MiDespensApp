@@ -55,5 +55,15 @@
 
         />
 
+    <Button
+        android:id="@+id/btn_add_producto"
+        android:layout_width="70dp"
+        android:layout_height="80dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="60dp"
+        android:text="@string/añadir"
+        app:cornerRadius="40dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,7 @@
 package com.example.midespensapp.ui.lista
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,10 +12,10 @@ import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.example.midespensapp.DB.CasaManager
 import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
 import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
 import com.example.midespensapp.DB.RealTimeManager
+import com.example.midespensapp.MainActivity2
 import com.example.midespensapp.R
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.ProductoListaCompra
@@ -27,6 +28,8 @@ class ListaFragment : Fragment() {
 
     private lateinit var lvListaProductos: ListView
     private val realTimeManager = RealTimeManager()
+    private lateinit var botonAnadirProducto: Button
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -34,59 +37,16 @@ class ListaFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_lista, container, false)
         // Obtener la referencia de la lista de productos
         lvListaProductos = view.findViewById(R.id.lvListaCompra)
+        botonAnadirProducto = view.findViewById(R.id.btn_add_producto)
+        botonAnadirProducto.setOnClickListener {
+            val intent = Intent(context, MainActivity2::class.java)
+            startActivity(intent)
+        }
         //obtener los productos de la lista de la compra y mostrarlos en un log
-        listarProductosListaCompra()
-        //obtener la casa del usuario y mostrarla en un log
+        //listarProductosListaCompra()
 
 
         return view
-    }
-
-    private fun listarProductosListaCompra() {
-        // Obtener la casa del usuario
-        obtenerCasaPorIdUsuario()
-    }
-
-    private fun obtenerCasaPorIdUsuario() {
-        realTimeManager.obtenerCasaPorIdUsuario(
-            obtenerUsuarioLogueado(),
-            object : ObtenerCasaPorIdUsuarioCallBack {
-                override fun onCasaObtenida(casa: Casa) {
-                    Log.d("ListaFragment", "Casa obtenida: $casa")
-                    // Una vez que se obtiene la casa del usuario, obtener los productos de la lista de compra
-                    obtenerProductosListaCompra(casa)
-                }
-
-                override fun onError(error: DatabaseError) {
-                    Log.e("ListaFragment", "Error al obtener la casa", error.toException())
-                }
-            })
-    }
-
-    private fun obtenerProductosListaCompra(casa: Casa) {
-        realTimeManager.obtenerProductosListaCompraPorIdCasa(
-            casa.id.toString(),
-            object : ObtenerProductosListaCompraCallBack {
-                override fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>) {
-                    Log.d("ListaFragment", "Productos obtenidos: $productos")
-                    // Crear un adaptador para mostrar los productos en un ListView
-                    val adapter = ProductosListaCompraAdapter(requireContext(), productos)
-                    lvListaProductos.adapter = adapter
-                }
-
-                override fun onError(error: DatabaseError) {
-                    Log.e("ListaFragment", "Error al obtener los productos", error.toException())
-                }
-            })
-    }
-
-    private fun obtenerUsuarioLogueado(): String {
-        // Obtener el ID del usuario logueado
-        val auth = Firebase.auth.currentUser?.uid
-        val idUsuario = auth.toString()
-        Log.d("ListaFragment", "ID del usuario logueado: $idUsuario")
-        // Obtener la casa del usuario logueado
-        return idUsuario
     }
 
     class ProductosListaCompraAdapter(
@@ -124,7 +84,7 @@ class ListaFragment : Fragment() {
             val btnMas = view.findViewById<Button>(R.id.btnMas)
             btnMas.setOnClickListener {
                 // Aumentar la cantidad del producto en la lista de la compra
-                aumentarCantidadProducto(producto)
+                //aumentarCantidadProducto(producto)
                 tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
             }
@@ -132,88 +92,12 @@ class ListaFragment : Fragment() {
             val btnMenos = view.findViewById<Button>(R.id.btnMenos)
             btnMenos.setOnClickListener {
                 // Disminuir la cantidad del producto en la lista de la compra
-                disminuirCantidadProducto(producto)
+                //disminuirCantidadProducto(producto)
                 tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
             }
 
             return view
-        }
-
-        //funcion para disminuir la cantidad de un producto en la lista de la compra
-        fun disminuirCantidadProducto(producto: ProductoListaCompra) {
-
-            val auth = Firebase.auth.currentUser?.uid
-            val idUsuario = auth.toString()
-            val casaManager = CasaManager()
-            casaManager.obtenerCasaPorIdUsuario(idUsuario) { casa ->
-                if (casa != null) {
-                    realTimeManager.disminuirCantidadAComprarCompra(
-                        casa.id.toString(),
-                        producto.nombre.toString()
-                    )
-                    actualizarListaProductos()
-                } else {
-                    // Error al obtener la casa, manejarlo aquí
-                    println("Error al obtener la casa.")
-
-                }
-            }
-        }
-
-        fun aumentarCantidadProducto(producto: ProductoListaCompra) {
-            // Obtener la casa del usuario
-
-            val auth = Firebase.auth.currentUser?.uid
-            val idUsuario = auth.toString()
-            val casaManager = CasaManager()
-            casaManager.obtenerCasaPorIdUsuario(idUsuario) { casa ->
-                if (casa != null) {
-                    realTimeManager.aumentarCantidadAComprarCompra(
-                        casa.id.toString(),
-                        producto.nombre.toString()
-                    )
-                    actualizarListaProductos()
-                } else {
-                    // Error al obtener la casa, manejarlo aquí
-                    println("Error al obtener la casa.")
-                }
-            }
-        }
-
-        private fun actualizarListaProductos() {
-            // Volver a obtener los productos de la lista de compra y notificar cambios
-            obtenerProductosListaCompra { nuevosProductos ->
-                listaDeProductos.clear()
-                listaDeProductos.addAll(nuevosProductos)
-                notifyDataSetChanged()
-            }
-        }
-
-        // Función para obtener los productos de la lista de compra
-        private fun obtenerProductosListaCompra(callback: (MutableList<ProductoListaCompra>) -> Unit) {
-            val auth = Firebase.auth.currentUser?.uid
-            val idUsuario = auth.toString()
-            val casaManager = CasaManager()
-            casaManager.obtenerCasaPorIdUsuario(idUsuario) { casa ->
-                if (casa != null) {
-                    realTimeManager.obtenerProductosListaCompraPorIdCasa(
-                        casa.id.toString(),
-                        object : ObtenerProductosListaCompraCallBack {
-                            override fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>) {
-                                callback(productos)
-                            }
-
-                            override fun onError(error: DatabaseError) {
-                                // Manejar el error
-                                println("Error al obtener los productos de la lista de compra.")
-                            }
-                        })
-                } else {
-                    // Error al obtener la casa, manejarlo aquí
-                    println("Error al obtener la casa.")
-                }
-            }
         }
     }
 

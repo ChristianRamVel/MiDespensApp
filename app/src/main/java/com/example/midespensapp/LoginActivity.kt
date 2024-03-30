@@ -9,24 +9,38 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.midespensapp.DB.ComprobarSiCasaExisteCallBack
+import androidx.core.content.ContentProviderCompat.requireContext
+import com.example.midespensapp.DB.ComprobarCasaExisteCallBack
+import com.example.midespensapp.DB.CrearCasaCallBack
 import com.example.midespensapp.DB.RealTimeManager
+import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.clases.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import java.lang.Thread.sleep
 
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private var realTimeManager = RealTimeManager()
+    private lateinit var realTimeManager: RealTimeManager
+    private lateinit var database: FirebaseDatabase
+    private lateinit var usersRef: DatabaseReference
+    private lateinit var gson: Gson
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
-        super.onStart()
         auth = Firebase.auth
+        realTimeManager = RealTimeManager()
+        database = FirebaseDatabase.getInstance()
+        gson = Gson()
+        usersRef = database.getReference("usuarios")
 
+        val context = this
         val logout =
             intent.getBooleanExtra("logout", false) // Verificamos si venimos de cerrar sesión
 
@@ -51,10 +65,9 @@ class LoginActivity : AppCompatActivity() {
 
         btnSingIn.setOnClickListener {
             if (etEmail.text.isNotEmpty() && etPassword.text.isNotEmpty()) {
-                singIn(etEmail.text.toString(), etPassword.text.toString())
+                signIn(etEmail.text.toString(), etPassword.text.toString())
             } else {
-                Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -65,184 +78,136 @@ class LoginActivity : AppCompatActivity() {
                 .setPositiveButton("Aceptar") { dialog, _ ->
                     val etCasaId = (dialog as AlertDialog).findViewById<EditText>(R.id.etCasaId)
                     if (etCasaId != null && etCasaId.text.isNotEmpty()) {
-                        val casaId = etCasaId.text.toString()
-                        realTimeManager.comprobarSiCasaExistePorIDCasa(
-                            casaId,
-                            object : ComprobarSiCasaExisteCallBack {
-                                override fun onCasaExiste(existe: Boolean) {
-                                    if (existe) {
-                                        if (camposValidos(
-                                                etEmail.text.toString(),
-                                                etPassword.text.toString()
-                                            )
-                                        ) {
-                                            createAccount(
-                                                etEmail.text.toString(),
-                                                etPassword.text.toString(),
-                                                casaId
-                                            ) { success ->
-                                                if (success) {
-                                                    // Creación de cuenta exitosa, ahora guardar usuario
-                                                    realTimeManager.guardarUsuario(
-                                                        etEmail.text.toString(),
-                                                        casaId
-                                                    )
-                                                    // Actualizar la interfaz de usuario
-                                                    updateUI(Firebase.auth.currentUser)
-                                                } else {
-                                                    // Manejar caso de fallo en la creación de cuenta
-                                                    mostrarMensaje("Error al crear la cuenta.")
-                                                }
-                                            }
-
-                                        } else {
-                                            mostrarMensaje("Por favor, rellene todos los campos.")
-                                        }
-                                    } else {
-                                        mostrarMensaje("La casa no existe.")
-                                    }
-                                }
-
-                                override fun onCasaNoExiste(error: Boolean) {
-                                    mostrarMensaje("La casa no existe.")
-                                }
-
-                                override fun onError(error: DatabaseError) {
-                                    mostrarMensaje("Error al comprobar si la casa existe.")
-                                }
-                            })
-
+                        val idCasa = etCasaId.text.toString()
+                        checkIfCasaExists(idCasa, etEmail.text.toString(), etPassword.text.toString())
                     } else {
-                        mostrarMensaje("Por favor, rellene todos los campos.")
+                        Toast.makeText(this,"Por favor, rellene todos los campos", Toast.LENGTH_SHORT).show()
                     }
                 }
                 .setNegativeButton("Cancelar") { dialog, _ ->
                     dialog.dismiss()
                 }
                 .show()
-            updateUI(Firebase.auth.currentUser)
         }
-
-
-
         btnCreateAccount.setOnClickListener {
-            if (etEmail.text.isNotEmpty() && etPassword.text.isNotEmpty()) {
-                createAccount(etEmail.text.toString(), etPassword.text.toString()) { success ->
-                    if (success) {
-                        // Creación de cuenta exitosa, ahora guardar usuario
-                        realTimeManager.guardarUsuario(
-                            etEmail.text.toString(),
-                            realTimeManager.crearCasaNueva().id!!
-                        )
-                        // Actualizar la interfaz de usuario
-                        updateUI(Firebase.auth.currentUser)
-                    } else {
-                        // Manejar caso de fallo en la creación de cuenta
-                        mostrarMensaje("Error al crear la cuenta.")
-                    }
+            crearCasaNueva(object : CrearCasaCallBack {
+                override fun onCasaCreada(casa: Casa) {
+                    Log.d(TAG, "Casa creada con éxito")
+                    Toast.makeText(context, "Casa creada con éxito", Toast.LENGTH_SHORT).show()
+                    createAccount(etEmail.text.toString(), etPassword.text.toString())
+                    sleep(1000)
+                    //recogerel id del usuario creado
+                    val userId = auth.currentUser?.uid
+                    addUserToDatabase(etEmail.text.toString(), casa.id, userId.toString())
+                    signIn(etEmail.text.toString(), etPassword.text.toString())
                 }
 
-                updateUI(Firebase.auth.currentUser)
-            } else {
-                Toast.makeText(
-                    this,
-                    "Por favor, rellene todos los campos",
-                    Toast.LENGTH_SHORT
-                )
-                    .show()
+                override fun onError(error: Exception?) {
+                    Log.e(TAG, "Error al crear casa", error)
+                    Toast.makeText(context, "Error al crear casa", Toast.LENGTH_SHORT).show()
+                }
             }
+            )
+
         }
     }
 
+    private fun signIn(email: String, password: String) {
+        if (camposValidos(email, password)) {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "signInWithEmail:success")
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        updateUI(null)
+                    }
+                }
+        } else {
+            Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT).show()
+        }
+    }
 
-    // Función para validar los campos de correo electrónico y contraseña
+    private fun createAccount(email: String, password: String) {
+        if (camposValidos(email, password)) {
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        Log.d(TAG, "createUserWithEmail:success")
+                        val user = auth.currentUser
+                        updateUI(user)
+                    } else {
+                        Toast.makeText(this, "Error al crear usuario", Toast.LENGTH_SHORT).show()
+                    }
+                }
+        } else {
+            Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT).show()
+        }
+        signIn(email, password)
+    }
+
+    //funcion para crear una casa
+    private fun crearCasaNueva(callback: CrearCasaCallBack) {
+        realTimeManager.crearCasa(object : CrearCasaCallBack {
+            override fun onCasaCreada(casa: Casa) {
+                Log.d(TAG, "Casa creada con éxito")
+                Toast.makeText(this@LoginActivity, "Casa creada con éxito", Toast.LENGTH_SHORT).show()
+                callback.onCasaCreada(casa)
+            }
+
+            override fun onError(error: Exception?) {
+                Log.e(TAG, "Error al crear casa", error)
+                Toast.makeText(this@LoginActivity, "Error al crear casa", Toast.LENGTH_SHORT).show()
+            }
+
+        })
+    }
+
+    private fun addUserToDatabase(email: String, idCasa: String, userId: String) {
+        // Crear un nuevo objeto Usuario y agregarlo a la base de datos utilizando el ID de usuario como clave
+        val usuario = Usuario(email, idCasa)
+        usersRef.child(userId).setValue(usuario)
+            .addOnSuccessListener {
+                Log.d(TAG, "Usuario agregado a la base de datos")
+                Toast.makeText(this@LoginActivity, "Usuario creado exitosamente", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener { e ->
+                Log.e(TAG, "Error al agregar usuario a la base de datos", e)
+                Toast.makeText(this@LoginActivity, "Error al crear usuario", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun checkIfCasaExists(idCasa: String, email:String, password: String) {
+
+        realTimeManager.comprobarCasaExiste(idCasa, object : ComprobarCasaExisteCallBack {
+            override fun onCasaExiste(existe: Boolean) {
+                if (existe) {
+                    Log.d(TAG, "La casa con ID '$idCasa' existe.")
+                    createAccount(email, password)
+                    sleep(1000)
+                    //recogerel id del usuario creado
+                    val userId = auth.currentUser?.uid
+                    addUserToDatabase(email, idCasa,userId.toString())
+                    updateUI(auth.currentUser)
+                } else {
+                    Toast.makeText(this@LoginActivity, "La casa no existe.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onError(error: Exception?) {
+                Toast.makeText(this@LoginActivity, "Error al verificar la casa.", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+
     private fun camposValidos(email: String, password: String): Boolean {
         return email.isNotEmpty() && password.isNotEmpty()
     }
 
-    // Función para mostrar mensajes Toast
-    private fun mostrarMensaje(mensaje: String) {
-        Toast.makeText(this@LoginActivity, mensaje, Toast.LENGTH_SHORT).show()
-    }
 
-
-    fun createAccount(email: String, password: String, callback: (Boolean) -> Unit) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
-                    val user = auth.currentUser
-                    val casaNueva = realTimeManager.crearCasaNueva()
-
-                    realTimeManager.guardarUsuario(email, casaNueva.id!!)
-
-                    callback(true) // Notificar éxito al callback
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "short password or email already in use.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    callback(false) // Notificar fallo al callback
-                }
-            }
-    }
-
-    fun createAccount(
-        email: String,
-        password: String,
-        casaExistente: String,
-        callback: (Boolean) -> Unit
-    ) {
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "createUserWithEmail:success")
-
-                    realTimeManager.guardarUsuario(email, casaExistente)
-
-                    callback(true) // Notificar éxito al callback
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "short password or email already in use.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    callback(false) // Notificar fallo al callback
-                }
-            }
-    }
-
-    fun singIn(email: String, password: String) {
-        auth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
-                    updateUI(user)
-
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        baseContext,
-                        "Authentication failed.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                    updateUI(null)
-                }
-            }
-    }
-
-
-    fun updateUI(user: Any?) {
+    private fun updateUI(user: Any?) {
         if (user != null) {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)

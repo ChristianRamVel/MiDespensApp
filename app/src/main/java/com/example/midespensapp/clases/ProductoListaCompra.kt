@@ -1,18 +1,13 @@
 package com.example.midespensapp.clases
 
+import com.google.gson.annotations.SerializedName
 
-data class ProductoListaCompra(
-    val nombre: String? = null,
-    var cantidadAComprar: Int? = null,
-    val comprado: Boolean? = null
+
+class ProductoListaCompra(
+    @SerializedName("nombre") val nombre: String = "",
+    @SerializedName("cantidadAComprar") val cantidadAComprar: Int = 0,
+    @SerializedName("comprado") val comprado: Boolean = false
 ) {
-
-    // Función para convertir un objeto ProductoListaCompra a un mapa
-    fun toMap(): Map<String, Any?> {
-        return mapOf(
-            "nombre" to nombre,
-            "cantidadAComprar" to cantidadAComprar,
-            "comprado" to comprado
-        )
-    }
+    // Constructor sin argumentos requerido por Firebase para deserialización
+    constructor() : this("", 0, false)
 }
