@@ -32,3 +32,18 @@ interface BorrarProductoDespensaCallBack {
     fun onProductoBorrado()
     fun onError(error: Exception?)
 }
+
+interface BorrarProductoListaCompraCallBack {
+    fun onProductoBorrado()
+    fun onError(error: Exception?)
+}
+
+interface BorrarDespensaCallBack {
+    fun onDespensaBorrada()
+    fun onError(error: Exception?)
+}
+
+interface BorrarListaCompraCallBack {
+    fun onListaCompraBorrada()
+    fun onError(error: Exception?)
+}

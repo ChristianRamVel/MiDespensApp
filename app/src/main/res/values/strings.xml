@@ -36,4 +36,25 @@
     <string name="anadir_a_despensa">Añadir a despensa</string>
     <string name="registar_prod_listaCompra_titulo">Registrar producto en lista de la compra</string>
     <string name="guardar_en_despensa">Guardar en Despensa</string>
+    <string name="enviar_casa">Enviar codigo de la casa</string>
+    <string name="borrar_despensa">Borrar la despensa</string>
+    <string name="borrar_compra">Borrar la lista de la compra</string>
+    <string name="informacion">Informacion</string>
+    <string name="informacion_texto">MiDespensaApp es una aplicación para gestionar la despensa de tu hogar.
+        ● Puedes añadir productos a la despensa y a la lista de la compra.
+        ● Compartir tu despensa con otros usuarios.
+        ● Desde el boton + que encuentres en las listas, podras añadir tus productos a la despensa o a la lista, y tambien tendras la opcion de añadirlos a los dos sitios desde un unico registro.
+        ● Si quieres eliminar productos de tu lista de la compra podras marcarlos y pulsar el boton de la papelera
+        ● si quieres mandarlos a la despensa, podras marcarlos y pulsar el boton a la izquierda de la papelera con el icono de una lista</string>
+    <string name="aceptar">Aceptar</string>
+    <string name="el_usuario_no_est_autenticado">El usuario no está autenticado</string>
+    <string name="error_obteniendo_casa">Error obteniendo casa: %1$s</string>
+    <string name="error_borrando_lista_de_compra">Error borrando lista de compra: %1$s</string>
+    <string name="lista_de_compra_borrada">Lista de compra borrada</string>
+    <string name="error_borrando_despensa">Error borrando despensa: %1$s</string>
+    <string name="despensa_borrada">Despensa borrada</string>
+    <string name="edit">Editar</string>
+    <string name="delete">Eliminar</string>
+    <string name="anadir_para_comprar">Añadir para comprar</string>
+    <string name="cantidad">Cantidad</string>
 </resources>

@@ -1,7 +1,6 @@
 package com.example.midespensapp
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.EditText
@@ -31,12 +30,12 @@ class MainActivity3 : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main3)
 
-        etNombreProducto = findViewById<EditText>(R.id.nombreProducto)
-        etCantidadMinimaProducto = findViewById<EditText>(R.id.cantidadMinimaStock)
-        etCantidadActualProducto = findViewById<EditText>(R.id.cantidadActual)
-        etCantidadAComprar = findViewById<EditText>(R.id.cantidadAComprar)
-        botonRegistrar = findViewById<Button>(R.id.botonRegistrarEnDespensa)
-        checkbox = findViewById<CheckBox>(R.id.checkBox)
+        etNombreProducto = findViewById(R.id.nombreProducto)
+        etCantidadMinimaProducto = findViewById(R.id.cantidadMinimaStock)
+        etCantidadActualProducto = findViewById(R.id.cantidadActual)
+        etCantidadAComprar = findViewById(R.id.cantidadAComprar)
+        botonRegistrar = findViewById(R.id.botonRegistrarEnDespensa)
+        checkbox = findViewById(R.id.checkBox)
 
         checkbox.setOnClickListener {
             if (checkbox.isChecked) {
@@ -51,122 +50,99 @@ class MainActivity3 : AppCompatActivity() {
         }
 
         botonRegistrar.setOnClickListener {
-            val nombreProducto = etNombreProducto.text.toString()
-            val cantidadAComprarStr = etCantidadAComprar.text.toString()
 
-            if (!checkbox.isChecked) {
-                if (validarNombreProducto(nombreProducto) && validarCantidadAComprar(
-                        cantidadAComprarStr
-                    )
-                ) {
-                    val cantidadAComprar = cantidadAComprarStr.toInt()
-                    guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
-                }
-            } else {
-                val cantidadMinimaProductoStr = etCantidadMinimaProducto.text.toString()
-                val cantidadActualProductoStr = etCantidadActualProducto.text.toString()
+            registrarProducto()
+        }
+    }
 
-                if (validarNombreProducto(nombreProducto) && validarCantidadMinima(
-                        cantidadMinimaProductoStr
-                    ) &&
-                    validarCantidadActual(cantidadActualProductoStr) && validarCantidadAComprar(
-                        cantidadAComprarStr
-                    )
-                ) {
+    private fun registrarProducto() {
+        val nombreProducto = etNombreProducto.text.toString()
+        val cantidadAComprarStr = etCantidadAComprar.text.toString()
 
-                    val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
-                    val cantidadActualProducto = cantidadActualProductoStr.toInt()
-                    val cantidadAComprar = cantidadAComprarStr.toInt()
+        if (!checkbox.isChecked) {
+            if (validarNombreProducto(nombreProducto) && validarCantidadAComprar(
+                    cantidadAComprarStr
+                )
+            ) {
+                val cantidadAComprar = cantidadAComprarStr.toInt()
+                guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
+            }
+        } else {
+            val cantidadMinimaProductoStr = etCantidadMinimaProducto.text.toString()
+            val cantidadActualProductoStr = etCantidadActualProducto.text.toString()
 
-                    guardarProductoEnDespensa(
-                        nombreProducto,
-                        cantidadMinimaProducto,
-                        cantidadActualProducto
-                    )
-                    guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
-                }
+            if (validarNombreProducto(nombreProducto) && validarCantidadMinima(
+                    cantidadMinimaProductoStr
+                ) && validarCantidadActual(cantidadActualProductoStr)
+            ) {
+                val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
+                val cantidadActualProducto = cantidadActualProductoStr.toInt()
+                val cantidadAComprar = cantidadAComprarStr.toInt()
+
+                guardarProductoEnDespensa(
+                    nombreProducto,
+                    cantidadMinimaProducto,
+                    cantidadActualProducto
+                )
+                guardarProductoEnListaCompra(nombreProducto, cantidadAComprar)
             }
         }
-
-
     }
-    internal fun validarNombreProducto(nombreProducto: String): Boolean {
-        return if (nombreProducto.isEmpty()) {
+
+    private fun validarNombreProducto(nombreProducto: String): Boolean {
+        if (nombreProducto.isEmpty()) {
             etNombreProducto.error = "El nombre del producto no puede estar vacío"
-            Toast.makeText(
-                this,
-                "El nombre del producto no puede estar vacío",
-                Toast.LENGTH_SHORT
-            ).show()
-            false
-        } else {
-            true
+            Toast.makeText(this, "El nombre del producto no puede estar vacío", Toast.LENGTH_SHORT)
+                .show()
+            return false
         }
+        return true
     }
 
-    internal fun validarCantidadAComprar(cantidadAComprarStr: String): Boolean {
-        return if (cantidadAComprarStr.isEmpty()) {
+    private fun validarCantidadAComprar(cantidadAComprarStr: String): Boolean {
+        if (cantidadAComprarStr.isEmpty()) {
             etCantidadAComprar.error = "La cantidad a comprar no puede estar vacía"
-            Toast.makeText(
-                this,
-                "La cantidad a comprar no puede estar vacía",
-                Toast.LENGTH_SHORT
-            ).show()
-            false
-        } else {
-            val cantidadAComprar = cantidadAComprarStr.toInt()
-            if (cantidadAComprar <= 0) {
-                etCantidadAComprar.error = "La cantidad a comprar no puede ser 0 o negativa"
-                Toast.makeText(
-                    this,
-                    "La cantidad a comprar no puede ser 0 o negativa",
-                    Toast.LENGTH_SHORT
-                ).show()
-                false
-            } else {
-                true
-            }
+            Toast.makeText(this, "La cantidad a comprar no puede estar vacía", Toast.LENGTH_SHORT)
+                .show()
+            return false
+        } else if (cantidadAComprarStr.toInt() <= 0) {
+            etCantidadAComprar.error = "La cantidad a comprar no puede ser 0"
+            Toast.makeText(this, "La cantidad a comprar no puede ser 0", Toast.LENGTH_SHORT).show()
+            return false
         }
+
+        return true
     }
 
-    internal fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
-        return if (cantidadMinimaProductoStr.isEmpty()) {
+    private fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
+        if (cantidadMinimaProductoStr.isEmpty()) {
             etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede estar vacía"
             Toast.makeText(
                 this,
                 "La cantidad mínima de stock no puede estar vacía",
                 Toast.LENGTH_SHORT
             ).show()
-            false
-        } else {
-            val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
-            if (cantidadMinimaProducto <= 0) {
-                etCantidadMinimaProducto.error =
-                    "La cantidad mínima de stock no puede ser 0 o negativa"
-                Toast.makeText(
-                    this,
-                    "La cantidad mínima de stock no puede ser 0 o negativa",
-                    Toast.LENGTH_SHORT
-                ).show()
-                false
-            } else {
-                true
-            }
+            return false
+        } else if (cantidadMinimaProductoStr.toInt() <= 0) {
+            etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede ser 0"
+            Toast.makeText(this, "La cantidad mínima de stock no puede ser 0", Toast.LENGTH_SHORT)
+                .show()
+            return false
         }
+        return true
     }
 
-    internal fun validarCantidadActual(cantidadActualProductoStr: String): Boolean {
-        return if (cantidadActualProductoStr.isEmpty()) {
+    private fun validarCantidadActual(cantidadActualProductoStr: String): Boolean {
+        if (cantidadActualProductoStr.isEmpty()) {
             etCantidadActualProducto.error = "La cantidad actual de stock no puede estar vacía"
             Toast.makeText(
                 this,
                 "La cantidad actual de stock no puede estar vacía",
                 Toast.LENGTH_SHORT
             ).show()
-            false
-        } else {
-            true
+            return false
         }
+        return true
     }
 
     //funcion para guardar producto en productosListaCompra
@@ -214,7 +190,6 @@ class MainActivity3 : AppCompatActivity() {
                 }
 
                 override fun onError(error: Exception?) {
-                    Log.e("MainActivity2", "Error obteniendo casa: ${error?.message}")
                     Toast.makeText(
                         this@MainActivity3,
                         "Error obteniendo casa: ${error?.message}",
@@ -224,7 +199,6 @@ class MainActivity3 : AppCompatActivity() {
             })
         } else {
             // El usuario no está autenticado
-            Log.e("MainActivity2", "El usuario no está autenticado")
             Toast.makeText(this@MainActivity3, "El usuario no está autenticado", Toast.LENGTH_SHORT)
                 .show()
         }
@@ -264,7 +238,7 @@ class MainActivity3 : AppCompatActivity() {
                                     "Producto guardado en la despensa correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                                finish()
+
                             }
                             .addOnFailureListener {
                                 Toast.makeText(
@@ -283,7 +257,6 @@ class MainActivity3 : AppCompatActivity() {
                 }
 
                 override fun onError(error: Exception?) {
-                    Log.e("MainActivity2", "Error obteniendo casa: ${error?.message}")
                     Toast.makeText(
                         this@MainActivity3,
                         "Error obteniendo casa: ${error?.message}",
@@ -292,11 +265,17 @@ class MainActivity3 : AppCompatActivity() {
                 }
             })
         } else {
-            // El usuario no está autenticado
-            Log.e("MainActivity2", "El usuario no está autenticado")
+
             Toast.makeText(this@MainActivity3, "El usuario no está autenticado", Toast.LENGTH_SHORT)
                 .show()
         }
     }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        onBackPressedDispatcher.onBackPressed()
+        finish()
+    }
+
 
 }

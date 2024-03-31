@@ -3,4 +3,17 @@
     <item
         android:id="@+id/sing_out"
         android:title="@string/cerrar_sesion" />
+    <item
+        android:id="@+id/enviar_casa"
+        android:title="@string/enviar_casa" />
+    <item
+        android:id="@+id/borrar_despensa"
+        android:title="@string/borrar_despensa" />
+
+    <item
+        android:id="@+id/borrar_compra"
+        android:title="@string/borrar_compra" />
+    <item
+        android:id="@+id/informacion"
+        android:title="@string/informacion" />
 </menu>

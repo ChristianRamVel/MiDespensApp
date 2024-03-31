@@ -78,8 +78,10 @@ class RealTimeManager {
 
                     for (productoSnapshot in snapshot.children) {
                         val nombre = productoSnapshot.child("nombre").getValue(String::class.java)
-                        val stockActual = productoSnapshot.child("stockActual").getValue(Int::class.java)
-                        val stockMinimo = productoSnapshot.child("stockMinimo").getValue(Int::class.java)
+                        val stockActual =
+                            productoSnapshot.child("stockActual").getValue(Int::class.java)
+                        val stockMinimo =
+                            productoSnapshot.child("stockMinimo").getValue(Int::class.java)
 
                         if (nombre != null && stockActual != null && stockMinimo != null) {
                             val producto = ProductoDespensa(nombre, stockActual, stockMinimo)
@@ -110,8 +112,10 @@ class RealTimeManager {
 
                     for (productoSnapshot in snapshot.children) {
                         val nombre = productoSnapshot.child("nombre").getValue(String::class.java)
-                        val cantidad = productoSnapshot.child("cantidadAComprar").getValue(Int::class.java)
-                        val comprado = productoSnapshot.child("comprado").getValue(Boolean::class.java)
+                        val cantidad =
+                            productoSnapshot.child("cantidadAComprar").getValue(Int::class.java)
+                        val comprado =
+                            productoSnapshot.child("comprado").getValue(Boolean::class.java)
 
                         if (nombre != null && cantidad != null && comprado != null) {
                             val producto = ProductoListaCompra(nombre, cantidad, comprado)
@@ -189,9 +193,25 @@ class RealTimeManager {
             }
     }
 
-    //funcion para borrar un producto de la lista de productosListaCompra de una casa
+    fun borrarListaCompra(casaId: String, callback: BorrarProductoDespensaCallBack) {
+        val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
 
-    fun borrarProductoListaCompra(casaId: String, producto: ProductoListaCompra, callback: BorrarProductoDespensaCallBack) {
+        query.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback.onProductoBorrado()
+                } else {
+                    callback.onError(task.exception)
+                }
+            }
+    }
+
+
+    fun borrarProductoListaCompra(
+        casaId: String,
+        producto: ProductoListaCompra,
+        callback: BorrarProductoDespensaCallBack
+    ) {
         val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
 
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -201,7 +221,8 @@ class RealTimeManager {
                         it.getValue(ProductoListaCompra::class.java)
                     }
 
-                    val productoAEliminar = productosListaCompra.find { it.nombre == producto.nombre }
+                    val productoAEliminar =
+                        productosListaCompra.find { it.nombre == producto.nombre }
 
                     if (productoAEliminar != null) {
                         val productoRef = query.child(productoAEliminar.nombre)
@@ -226,6 +247,66 @@ class RealTimeManager {
             }
         })
     }
+
+    //funcion para borrar la lista de productosDespensa de una casa
+    fun borrarDespensa(casaId: String, callback: BorrarProductoDespensaCallBack) {
+        val query = database.reference.child("casas").child(casaId).child("productosDespensa")
+
+        query.removeValue()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    callback.onProductoBorrado()
+                } else {
+                    callback.onError(task.exception)
+                }
+            }
+
+
+    }
+
+    //funcion para borrar un producto de la lista de productosDespensa de una casa
+    fun borrarProductoDespensa(
+        casaId: String,
+        producto: ProductoDespensa,
+        callback: BorrarProductoDespensaCallBack
+    ) {
+        val query = database.reference.child("casas").child(casaId).child("productosDespensa")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosDespensa = snapshot.children.mapNotNull {
+                        it.getValue(ProductoDespensa::class.java)
+                    }
+
+                    val productoAEliminar =
+                        productosDespensa.find { it.nombre == producto.nombre }
+
+                    if (productoAEliminar != null) {
+                        val productoRef = query.child(productoAEliminar.nombre)
+                        productoRef.removeValue()
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    callback.onProductoBorrado()
+                                } else {
+                                    callback.onError(task.exception)
+                                }
+                            }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la despensa."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la despensa."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
+
 
     private fun DatabaseError(s: String): Exception? {
         return null

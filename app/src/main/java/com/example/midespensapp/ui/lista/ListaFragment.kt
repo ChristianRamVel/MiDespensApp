@@ -48,44 +48,57 @@ class ListaFragment : Fragment() {
         botonAnadirDespensa = view.findViewById(R.id.btn_añadir_seleccionados_despensa)
         botonBorrarProductosSeleccionados = view.findViewById(R.id.btn_borrar_seleccionados)
 
-        botonAnadirProducto.setOnClickListener {
-            val intent = Intent(context, MainActivity3::class.java)
-            startActivity(intent)
-        }
-        botonAnadirDespensa.setOnClickListener {
-
-            for (i in 0 until lvListaProductos.count) {
-                val producto = lvListaProductos.adapter.getItem(i) as ProductoListaCompra
-                if (producto.comprado) {
-                    guardarProductoEnDespensaDesdeLista(producto.nombre,producto.cantidadAComprar)
-                }
-            }
-        }
-
-        botonBorrarProductosSeleccionados.setOnClickListener {
-            for (i in 0 until lvListaProductos.count) {
-                val producto = lvListaProductos.adapter.getItem(i) as ProductoListaCompra
-                if (producto.comprado) {
-                    borrarProductoEnListaCompra(producto)
-                }
-            }
-            listarProductosListaCompra()
-        }
-        //obtener los productos de la lista de la compra y mostrarlos en un log
-        listarProductosListaCompra()
-
 
         return view
     }
 
+
+
+    private fun configurarBotones() {
+        botonAnadirProducto.setOnClickListener {
+            val intent = Intent(context, MainActivity3::class.java)
+            startActivity(intent)
+        }
+
+        botonAnadirDespensa.setOnClickListener {
+            botonAnadirDespensaOnClick()
+            listarProductosListaCompra()
+        }
+
+        botonBorrarProductosSeleccionados.setOnClickListener {
+            borrarProductosSeleccionados()
+            listarProductosListaCompra()
+        }
+    }
     private fun getCasaForCurrentUser(callback: ObtenerCasaPorIdUsuarioCallBack) {
         val userId = Firebase.auth.currentUser?.uid
         if (userId != null) {
             realTimeManager.obtenerCasaPorIdUsuario(userId, callback)
-            Log.d("DespensaFragment", "Id de usuario: $userId")
+            Log.d("ListaFragment", "Id de usuario: $userId")
         } else {
-            // Handle the case when the user is not logged in
-            Log.e("DespensaFragment", "User not logged in")
+            Log.e("ListaFragment", "Usuario no autenticado")
+        }
+    }
+
+    private fun procesarProductosSeleccionados(accion: (ProductoListaCompra) -> Unit) {
+        for (i in 0 until lvListaProductos.count) {
+            val producto = lvListaProductos.adapter.getItem(i) as ProductoListaCompra
+            if (producto.comprado) {
+                accion(producto)
+            }
+        }
+    }
+
+    private fun borrarProductosSeleccionados() {
+        procesarProductosSeleccionados { producto ->
+            borrarProductoEnListaCompra(producto)
+        }
+        listarProductosListaCompra()
+    }
+
+    private fun botonAnadirDespensaOnClick() {
+        procesarProductosSeleccionados { producto ->
+            guardarProductoEnDespensaDesdeLista(producto.nombre, producto.cantidadAComprar)
         }
     }
 
@@ -126,9 +139,13 @@ class ListaFragment : Fragment() {
                         ObtenerProductosListaCompraCallBack {
 
                         override fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>) {
-                            Log.d("CompraFragment", "Productos obtenidos: ${productos.size}")
-                            lvListaProductos.adapter =
-                                ProductosListaCompraAdapter(requireContext(), productos)
+                            if (isAdded) { // Verifica si el fragmento está adjunto a la actividad
+                                Log.d("CompraFragment", "Productos obtenidos: ${productos.size}")
+                                lvListaProductos.adapter = ProductosListaCompraAdapter(requireContext(), productos)
+                            } else {
+
+                                Log.e("CompraFragment", "Fragmento no adjunto a una actividad")
+                            }
                         }
 
                         override fun onError(error: Exception?) {
@@ -209,6 +226,7 @@ class ListaFragment : Fragment() {
         }
     }
 
+
     class ProductosListaCompraAdapter(
         context: Context,
         listaProductos: MutableList<ProductoListaCompra>
@@ -268,7 +286,19 @@ class ListaFragment : Fragment() {
             return view
         }
 
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        // Configurar los botones de la interfaz de usuario
+        configurarBotones()
+        listarProductosListaCompra()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Actualizar la lista de productos cuando el fragmento se vuelva a mostrar
+        listarProductosListaCompra()
     }
 
 }

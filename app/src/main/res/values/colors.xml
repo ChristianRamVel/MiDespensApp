@@ -10,4 +10,14 @@
     <color name="yellow_200">#F9A825</color>
     <color name="orange_200">#EF6C00</color>
     <color name="colorDeFondo">#FFECB3</color>
+    <color name="grey_200">#3A2F2F</color>
+
+
+
+<color name="colorPrimary">@color/yellow_200</color>
+<color name="colorPrimaryVariant">@color/orange_200</color>
+<color name="colorOnPrimary">@color/white</color>
+<color name="colorSecondary">@color/orange_200</color>
+<color name="colorSecondaryVariant">@color/colorDeFondo</color>
+    <color name="colorPrimaryDark">@color/grey_200</color>
 </resources>
