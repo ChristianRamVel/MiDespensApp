@@ -47,3 +47,18 @@ interface BorrarProductoListaCompraCallBack {
     fun onProductoBorrado()
     fun onError(error: Exception?)
 }
+
+interface ObtenerUsuariosPorIdCasaCallBack {
+    fun onUsuariosObtenidos(usuarios: List<String>)
+    fun onError(error: Exception?)
+}
+
+interface BorrarCasaCallBack {
+    fun onCasaBorrada()
+    fun onError(error: Exception?)
+}
+
+interface BorrarUsuarioCallBack {
+    fun onUsuarioBorrado()
+    fun onError(error: Exception?)
+}

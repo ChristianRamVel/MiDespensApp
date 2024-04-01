@@ -11,8 +11,11 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.example.midespensapp.DB.BorrarCasaCallBack
 import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
+import com.example.midespensapp.DB.BorrarUsuarioCallBack
 import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.DB.ObtenerUsuariosPorIdCasaCallBack
 import com.example.midespensapp.DB.RealTimeManager
 import com.example.midespensapp.clases.Casa
 import com.example.midespensapp.databinding.ActivityMainBinding
@@ -63,13 +66,11 @@ class MainActivity : AppCompatActivity() {
             R.id.sing_out -> {
                 if (auth.currentUser != null) {
                     auth.signOut()
-                    val intent = Intent(this, LoginActivity::class.java)
-                    intent.putExtra("logout", true)
-                    startActivity(intent)
-                    finish() // Asegúrate de finalizar esta actividad para que no se pueda volver atrás
+                    singOut()
                 }
                 true
             }
+
             R.id.enviar_casa -> {
 
                 // 2. Obtener el ID de la casa del usuario actual (asumiendo que ya tienes implementada la obtención del ID del usuario)
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity() {
                         ObtenerCasaPorIdUsuarioCallBack {
                         override fun onCasaObtenida(casa: Casa?) {
                             if (casa != null) {
-                               //abrir chooser para enviar la casa
+                                //abrir chooser para enviar la casa
                                 val sendIntent: Intent = Intent().apply {
                                     action = Intent.ACTION_SEND
                                     putExtra(Intent.EXTRA_TEXT, casa.id)
@@ -100,11 +101,16 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 } else {
-                    Toast.makeText(this@MainActivity,  getString(R.string.el_usuario_no_est_autenticado), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.el_usuario_no_est_autenticado),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
                 true
             }
+
             R.id.borrar_despensa -> {
 
                 val userId = FirebaseAuth.getInstance().currentUser?.uid
@@ -113,28 +119,31 @@ class MainActivity : AppCompatActivity() {
                         ObtenerCasaPorIdUsuarioCallBack {
                         override fun onCasaObtenida(casa: Casa?) {
                             if (casa != null) {
-                                realTimeManager.borrarDespensa(casa.id, object : BorrarProductoDespensaCallBack {
-                                    override fun onProductoBorrado() {
+                                realTimeManager.borrarDespensa(
+                                    casa.id,
+                                    object : BorrarProductoDespensaCallBack {
+                                        override fun onProductoBorrado() {
 
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(R.string.despensa_borrada),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(R.string.despensa_borrada),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
 
-                                    override fun onError(error: Exception?) {
+                                        }
 
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(
-                                                R.string.error_borrando_despensa,
-                                                error?.message
-                                            ),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                })
+                                        override fun onError(error: Exception?) {
+
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(
+                                                    R.string.error_borrando_despensa,
+                                                    error?.message
+                                                ),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    })
                             }
                         }
 
@@ -148,7 +157,11 @@ class MainActivity : AppCompatActivity() {
                     })
                 } else {
 
-                    Toast.makeText(this@MainActivity, getString(R.string.el_usuario_no_est_autenticado), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.el_usuario_no_est_autenticado),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
                 true
@@ -162,28 +175,30 @@ class MainActivity : AppCompatActivity() {
                         ObtenerCasaPorIdUsuarioCallBack {
                         override fun onCasaObtenida(casa: Casa?) {
                             if (casa != null) {
-                                realTimeManager.borrarListaCompra(casa.id, object : BorrarProductoDespensaCallBack {
-                                    override fun onProductoBorrado() {
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(R.string.lista_de_compra_borrada),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
+                                realTimeManager.borrarListaCompra(
+                                    casa.id,
+                                    object : BorrarProductoDespensaCallBack {
+                                        override fun onProductoBorrado() {
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(R.string.lista_de_compra_borrada),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
 
-                                    }
+                                        }
 
-                                    override fun onError(error: Exception?) {
+                                        override fun onError(error: Exception?) {
 
-                                        Toast.makeText(
-                                            this@MainActivity,
-                                            getString(
-                                                R.string.error_borrando_lista_de_compra,
-                                                error?.message
-                                            ),
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                })
+                                            Toast.makeText(
+                                                this@MainActivity,
+                                                getString(
+                                                    R.string.error_borrando_lista_de_compra,
+                                                    error?.message
+                                                ),
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    })
                             }
                         }
 
@@ -197,7 +212,11 @@ class MainActivity : AppCompatActivity() {
                         }
                     })
                 } else {
-                    Toast.makeText(this@MainActivity, getString(R.string.el_usuario_no_est_autenticado), Toast.LENGTH_SHORT)
+                    Toast.makeText(
+                        this@MainActivity,
+                        getString(R.string.el_usuario_no_est_autenticado),
+                        Toast.LENGTH_SHORT
+                    )
                         .show()
                 }
                 true
@@ -214,9 +233,138 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
+            R.id.borrar_cuenta -> {
+                AlertDialog.Builder(this)
+                    .setTitle("Borrar Cuenta")
+                    .setMessage("¿Estás seguro de que quieres borrar tu cuenta en MiDespensApp?, tambien se borrarian todos los datos asociados a ella,incluida la casa en caso de ser el unico miembro.")
+                    .setPositiveButton(getString(R.string.aceptar)) { dialog, _ ->
+                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        if (userId != null) {
+                            //buscar la casa del usuario
+                            realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                                ObtenerCasaPorIdUsuarioCallBack {
+                                override fun onCasaObtenida(casa: Casa?) {
+                                    if (casa != null) {
+                                        //buscar la casa en la lista de usuarios
+                                        realTimeManager.obtenerUsuariosPorIdCasa(casa.id, object :
+                                            ObtenerUsuariosPorIdCasaCallBack {
+                                            override fun onUsuariosObtenidos(usuarios: List<String>) {
+                                                if (usuarios.size == 1) {
+                                                    //borrar la casa
+                                                    realTimeManager.borrarCasa(casa.id, object :
+                                                        BorrarCasaCallBack {
+                                                        override fun onCasaBorrada() {
+                                                            //borrar la cuenta
+                                                            val user =
+                                                                FirebaseAuth.getInstance().currentUser
+                                                            if (user != null) {
+                                                                realTimeManager.borrarUsuario(
+                                                                    user.uid,
+                                                                    object : BorrarUsuarioCallBack {
+                                                                        override fun onUsuarioBorrado() {
+                                                                            user.delete()
+                                                                                .addOnCompleteListener { task ->
+                                                                                    if (task.isSuccessful) {
+                                                                                        // Eliminación exitosa, cerrar sesión
+                                                                                        singOut()
+                                                                                        FirebaseAuth.getInstance()
+                                                                                            .signOut()
+
+                                                                                    } else {
+                                                                                        // Error al eliminar el usuario, manejarlo apropiadamente
+                                                                                        Toast.makeText(
+                                                                                            this@MainActivity,
+                                                                                            getString(
+                                                                                                R.string.error_eliminando_cuenta
+                                                                                            ),
+                                                                                            Toast.LENGTH_SHORT
+                                                                                        ).show()
+                                                                                    }
+                                                                                }
+
+                                                                        }
+
+                                                                        override fun onError(error: Exception?) {
+                                                                            // Error al eliminar el usuario, manejarlo apropiadamente
+                                                                            Toast.makeText(
+                                                                                this@MainActivity,
+                                                                                getString(R.string.error_eliminando_cuenta),
+                                                                                Toast.LENGTH_SHORT
+                                                                            ).show()
+                                                                        }
+                                                                    })
+
+                                                            }
+                                                        }
+
+                                                        override fun onError(error: Exception?) {
+
+                                                        }
+                                                    })
+                                                } else {
+                                                    realTimeManager.borrarUsuario(userId, object :
+                                                    BorrarUsuarioCallBack{
+                                                        override fun onUsuarioBorrado() {
+                                                            val user =
+                                                                FirebaseAuth.getInstance().currentUser
+                                                            user?.delete()
+                                                                ?.addOnCompleteListener { task ->
+                                                                    if (task.isSuccessful) {
+
+                                                                        singOut()
+                                                                    } else {
+                                                                        Toast.makeText(
+                                                                            this@MainActivity,
+                                                                            getString(R.string.error_eliminando_cuenta),
+                                                                            Toast.LENGTH_SHORT
+                                                                        ).show()
+                                                                    }
+                                                                }
+                                                            singOut()
+                                                        }
+
+                                                        override fun onError(error: Exception?) {
+                                                            Toast.makeText(
+                                                                this@MainActivity,
+                                                                getString(R.string.error_eliminando_cuenta),
+                                                                Toast.LENGTH_SHORT
+                                                            ).show()
+                                                        }
+                                                    })
+
+                                                }
+
+                                            }
+
+                                            override fun onError(error: Exception?) {
+                                            }
+                                        })
+                                    }
+                                }
+
+                                override fun onError(error: Exception?) {
+                                    Toast.makeText(
+                                        this@MainActivity,
+                                        getString(R.string.error_obteniendo_casa),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            })
+
+                        }
+                    }.show()
+                true
+            }
+
             else -> super.onOptionsItemSelected(item)
         }
+
     }
 
+    private fun singOut() {
+        val intent = Intent(this, LoginActivity::class.java).putExtra("logout", true)
+        startActivity(intent)
+        finish()
+    }
 
 }

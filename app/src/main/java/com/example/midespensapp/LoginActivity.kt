@@ -38,7 +38,6 @@ class LoginActivity : AppCompatActivity() {
         gson = Gson()
         usersRef = database.getReference("usuarios")
 
-        val context = this
         val logout =
             intent.getBooleanExtra("logout", false) // Verificamos si venimos de cerrar sesión
 
@@ -102,7 +101,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun signIn(email: String, password: String) {
-        //hacer una corrutina para logearse
 
         if (camposValidos(email, password)) {
             auth.signInWithEmailAndPassword(email, password)
@@ -119,6 +117,9 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
+        } else {
+            Toast.makeText(this, "Por favor, rellene todos los campos", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -140,8 +141,17 @@ class LoginActivity : AppCompatActivity() {
                         })
 
                     } else {
-                        Toast.makeText(this, "Error al crear usuario", Toast.LENGTH_SHORT)
-                            .show()
+                        //si la contraseña es menor de 6 caracteres salta un error
+                        if (password.length < 6) {
+                            Toast.makeText(
+                                this,
+                                "La contraseña debe tener al menos 6 caracteres",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            Toast.makeText(this, "Error al crear usuario", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                 }
         } else {
@@ -207,7 +217,7 @@ class LoginActivity : AppCompatActivity() {
         realTimeManager.comprobarCasaExiste(idCasa, object : ComprobarCasaExisteCallBack {
             override fun onCasaExiste(existe: Boolean) {
                 if (existe) {
-                    createAccount(email, password,idCasa)
+                    createAccount(email, password, idCasa)
                 } else {
                     Toast.makeText(this@LoginActivity, "La casa no existe.", Toast.LENGTH_SHORT)
                         .show()

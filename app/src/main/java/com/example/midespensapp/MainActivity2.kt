@@ -44,6 +44,21 @@ class MainActivity2 : AppCompatActivity() {
             }
         }
 
+        val intent = intent
+        if (intent.extras != null) {
+            val nombreProducto = intent.getStringExtra("nombreProducto")
+            val cantidadActualProducto = intent.getIntExtra("stockActual", 0)
+
+            etNombreProducto.setText(nombreProducto)
+            etCantidadMinimaProducto.text.clear()
+            etCantidadActualProducto.setText(cantidadActualProducto.toString())
+
+            etNombreProducto.isEnabled = false
+            etCantidadActualProducto.isEnabled = false
+            checkbox.isEnabled = false
+        }
+
+
         botonRegistrar.setOnClickListener {
             registrarProducto()
         }

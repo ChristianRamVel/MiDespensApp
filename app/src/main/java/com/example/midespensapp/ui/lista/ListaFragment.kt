@@ -15,7 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.midespensapp.DB.AumentarCantidadAComprarCallBack
-import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
+import com.example.midespensapp.DB.BorrarProductoListaCompraCallBack
 import com.example.midespensapp.DB.DisminuirCantidadAComprarCallBack
 import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
 import com.example.midespensapp.DB.ObtenerProductosDespensaCallBack
@@ -107,7 +107,7 @@ class ListaFragment : Fragment() {
 
         botonAnadirDespensa.setOnClickListener {
             botonAnadirDespensaOnClick()
-            listarProductosListaCompra()
+
         }
 
         botonBorrarProductosSeleccionados.setOnClickListener {
@@ -145,7 +145,9 @@ class ListaFragment : Fragment() {
     private fun botonAnadirDespensaOnClick() {
         procesarProductosSeleccionados { producto ->
             guardarProductoEnDespensaDesdeLista(producto.nombre, producto.cantidadAComprar)
+            borrarProductoEnListaCompra(producto)
         }
+        listarProductosListaCompra()
     }
 
     private fun borrarProductoEnListaCompra(producto: ProductoListaCompra) {
@@ -154,9 +156,15 @@ class ListaFragment : Fragment() {
                 if (casa != null) {
                     Log.d("CompraFragment", "Casa obtenida: ${casa.id}")
                     realTimeManager.borrarProductoListaCompra(casa.id, producto, object :
-                        BorrarProductoDespensaCallBack {
+                        BorrarProductoListaCompraCallBack {
 
                         override fun onProductoBorrado() {
+                            Toast.makeText(
+                                context,
+                                "Producto ${producto.nombre} borrado de la lista de la compra",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            listarProductosListaCompra()
                         }
 
                         override fun onError(error: Exception?) {
@@ -254,7 +262,75 @@ class ListaFragment : Fragment() {
                             // El producto no existe en la despensa
                             productoDespensa = ProductoDespensa(nombreProducto, cantidadComprada)
                             productosDespensa.add(productoDespensa)
+                            guardarProductoEnDespensa(nombreProducto,cantidadComprada,1 )
                         }
+                    }
+                }
+
+                internal fun guardarProductoEnDespensa(
+                    nombreProducto: String,
+                    cantidadActualProducto: Int,
+                    cantidadMinimaProducto: Int
+
+                ) {
+                    // 1. Obtener referencia a la base de datos Firebase
+                    val databaseReference = FirebaseDatabase.getInstance().reference
+
+                    // 2. Obtener el ID de la casa del usuario actual (asumiendo que ya tienes implementada la obtención del ID del usuario)
+                    val userId = FirebaseAuth.getInstance().currentUser?.uid
+                    if (userId != null) {
+                        realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                            ObtenerCasaPorIdUsuarioCallBack {
+                            override fun onCasaObtenida(casa: Casa?) {
+                                if (casa != null) {
+                                    // 3. Crear un objeto ProductoDespensa con los datos proporcionados
+                                    val productoDespensa =
+                                        ProductoDespensa(
+                                            nombreProducto,
+                                            cantidadActualProducto,
+                                            cantidadMinimaProducto,
+                                        )
+                                    // 4. Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
+                                    databaseReference.child("casas").child(casa.id)
+                                        .child("productosDespensa").child(nombreProducto)
+                                        .setValue(productoDespensa)
+                                        .addOnSuccessListener {
+                                            // Éxito al guardar el producto en la despensa
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Producto guardado en la despensa correctamente",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(
+                                                requireContext(),
+                                                "Error al guardar el producto en la despensa",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                } else {
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "No se encontró la casa para el usuario actual",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                            override fun onError(error: Exception?) {
+                                Toast.makeText(
+                                    requireContext(),
+                                    "Error obteniendo casa: ${error?.message}",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        })
+                    } else {
+
+                        Toast.makeText(requireContext(), "El usuario no está autenticado", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
 
@@ -410,14 +486,12 @@ class ListaFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // Configurar los botones de la interfaz de usuario
         configurarBotones()
         listarProductosListaCompra()
     }
 
     override fun onResume() {
         super.onResume()
-        // Actualizar la lista de productos cuando el fragmento se vuelva a mostrar
         listarProductosListaCompra()
     }
 

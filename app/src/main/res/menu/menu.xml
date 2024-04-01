@@ -15,5 +15,10 @@
         android:title="@string/borrar_compra" />
     <item
         android:id="@+id/informacion"
-        android:title="@string/informacion" />
+        android:title="@string/informacion"
+        />
+    <item
+        android:id="@+id/borrar_cuenta"
+        android:title="@string/borrar_cuenta"
+        />
 </menu>

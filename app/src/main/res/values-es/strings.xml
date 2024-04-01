@@ -1,18 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">MiDespensApp</string>
     <string name="titulo_despensa">Despensa</string>
     <string name="titulo_lista">Lista de la Compra</string>
     <string name="titulo_notificaciones">Notificaciones</string>
     <string name="añadir">+</string>
-    <string name="producto">producto</string>
-    <string name="cantidad_en_stock">cantidad actual en stock</string>
+    <string name="producto">Producto</string>
+    <string name="cantidad_en_stock">Cantidad actual en stock</string>
     <string name="cantidadParaComprar">Cantidad a comprar</string>
-    <string name="cantidadAlmacenada">cantidadAlmacenada</string>
-    <string name="nombreProducto">nombre del producto</string>
-    <string name="cantidadMinimaProducto">cantidad minima de stock</string>
-    <string name="cantidadActualProducto">cantidad actual del producto</string>
-    <string name="registar_prod_despensa">registar producto</string>
-    <string name="instruccionesRegistroProducto">si la cantidad es menor que el stock minimo, se entendera que quiere añadir a la lista de la compra este nuevo producto</string>
+    <string name="cantidadAlmacenada">CantidadAlmacenada</string>
+    <string name="nombreProducto">Nombre del producto</string>
+    <string name="cantidadMinimaProducto">Cantidad minima de stock</string>
+    <string name="cantidadActualProducto">Cantidad actual del producto</string>
+    <string name="registar_prod_despensa">Registar producto</string>
+    <string name="instruccionesRegistroProducto">Si la cantidad es menor que el stock minimo, se entendera que quiere añadir a la lista de la compra este nuevo producto</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
@@ -23,14 +25,14 @@
     <string name="invalid_password">La contraseña debe ser mayor de 5 cracteres</string>
     <string name="login_failed">"Login failed"</string>
     <string name="checkbox">Añadir a la lista de la compra</string>
-    <string name="registrarse">registrarse</string>
+    <string name="registrarse">Registrarse</string>
     <string name="cerrar_sesion">Cerrar Sesion</string>
-    <string name="registrarseEnCasaExistente">registrar en casa existente</string>
+    <string name="registrarseEnCasaExistente">Registrar en casa existente</string>
     <string name="inserta_casa_id">Inserta el id de la casa</string>
-    <string name="casa_id">id de la casa</string>
+    <string name="casa_id">Id de la casa</string>
     <string name="stockminimo">Minimo</string>
     <string name="stock_actual">Actual</string>
-    <string name="comprado">comprado</string>
+    <string name="comprado">Comprado</string>
     <string name="registar_prod_despensa_titulo">Registrar producto en despensa</string>
     <string name="anadir_a_despensa">Añadir a despensa</string>
     <string name="registar_prod_listaCompra_titulo">Registrar producto en lista de la compra</string>

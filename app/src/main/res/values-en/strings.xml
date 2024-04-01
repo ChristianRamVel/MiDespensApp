@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MyPantryApp</string>
+    <string name="titulo_despensa">Pantry</string>
+    <string name="titulo_lista">Shopping List</string>
+    <string name="titulo_notificaciones">Notifications</string>
+    <string name="añadir">+</string>
+    <string name="producto">Product</string>
+    <string name="cantidad_en_stock">Current quantity in stock</string>
+    <string name="cantidadParaComprar">Quantity to buy</string>
+    <string name="cantidadAlmacenada">Stored quantity</string>
+    <string name="nombreProducto">Product name</string>
+    <string name="cantidadMinimaProducto">Minimum stock quantity</string>
+    <string name="cantidadActualProducto">Current product quantity</string>
+    <string name="registar_prod_despensa">Register product</string>
+    <string name="instruccionesRegistroProducto">If the quantity is less than the minimum stock, it will be added to the shopping list</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign In</string>
+    <string name="action_register">Register</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Invalid username</string>
+    <string name="invalid_password">Password must be longer than 5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="checkbox">Add to the shopping list</string>
+    <string name="registrarse">Register</string>
+    <string name="cerrar_sesion">Log out</string>
+    <string name="registrarseEnCasaExistente">Register in existing house</string>
+    <string name="inserta_casa_id">Insert the house ID</string>
+    <string name="casa_id">House ID</string>
+    <string name="stockminimo">Minimum</string>
+    <string name="stock_actual">Current</string>
+    <string name="comprado">Purchased</string>
+    <string name="registar_prod_despensa_titulo">Register product in pantry</string>
+    <string name="anadir_a_despensa">Add to pantry</string>
+    <string name="registar_prod_listaCompra_titulo">Register product in shopping list</string>
+    <string name="guardar_en_despensa">Save to Pantry</string>
+    <string name="enviar_casa">Send house code</string>
+    <string name="borrar_despensa">Delete pantry</string>
+    <string name="borrar_compra">Delete shopping list</string>
+    <string name="informacion">Information</string>
+    <string name="informacion_texto">MyPantryApp is an application to manage your home pantry.\n
+    \n● You can add products to the pantry and shopping list.
+    \n● Share your pantry with other users.
+    \n● From the + button, you can add your products to the pantry or shopping list, and you will also have the option to add them to both places from a single entry.
+    \n● If you want to delete products from any of your lists, you can check them and press the trash button.
+    \n● If you want to send products from the shopping list to the pantry, you can check them and press the button to the left of the trash can with the list icon.
+    \n● If you want to edit the minimum stock of a product in your pantry, you can check it and press the button to the left of the trash can with the pencil icon.
+</string>
+    <string name="aceptar">Accept</string>
+    <string name="el_usuario_no_est_autenticado">The user is not authenticated</string>
+    <string name="error_obteniendo_casa">Error getting house: %1$s</string>
+    <string name="error_borrando_lista_de_compra">Error deleting shopping list: %1$s</string>
+    <string name="lista_de_compra_borrada">Shopping list deleted</string>
+    <string name="error_borrando_despensa">Error deleting pantry: %1$s</string>
+    <string name="despensa_borrada">Pantry deleted</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="anadir_para_comprar">Add to buy</string>
+    <string name="cantidad">Quantity</string>
+    <string name="borrar_cuenta">Delete account</string>
+    <string name="cancelar">Cancel</string>
+    <string name="error_eliminando_cuenta">Error deleting the account</string>
+</resources>

@@ -37,6 +37,9 @@ class DespensaFragment : Fragment() {
     private lateinit var lvListaProductos: ListView
     private val realTimeManager = RealTimeManager()
     private lateinit var botonAnadirProducto: Button
+    lateinit var botonBorrarProductosSeleccionados: Button
+    lateinit var botonEditarProducto: Button
+    private var productosDespensa = mutableListOf<ProductoDespensa>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -46,17 +49,57 @@ class DespensaFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_despensa, container, false)
         lvListaProductos = view.findViewById(R.id.listViewDespensa)
         registerForContextMenu(lvListaProductos)
+        rellenarListaDespensa()
 
         botonAnadirProducto = view.findViewById(R.id.btn_add_producto)
-        botonAnadirProducto.setOnClickListener {
-            val intent = Intent(context, MainActivity2::class.java)
-            startActivity(intent)
-        }
+        botonBorrarProductosSeleccionados = view.findViewById(R.id.btn_borrar_seleccionados)
+        botonEditarProducto = view.findViewById(R.id.btn_editarSeleccionado)
 
         return view
     }
 
+    private fun rellenarListaDespensa() {
+        val userId = Firebase.auth.currentUser?.uid
+        if (userId != null) {
+            realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                ObtenerCasaPorIdUsuarioCallBack {
+                override fun onCasaObtenida(casa: Casa?) {
+                    if (casa != null) {
+                        Log.d("CompraFragment", "Casa obtenida: ${casa.id}")
+                        realTimeManager.obtenerProductosDespensa(casa.id, object :
+                            ObtenerProductosDespensaCallBack {
+                            override fun onProductosObtenidos(productos: MutableList<ProductoDespensa>) {
+                                if (isAdded) { // Verifica si el fragmento está adjunto a la actividad
+                                    Log.d(
+                                        "CompraFragment",
+                                        "Productos obtenidos: ${productos.size}"
+                                    )
+                                    productosDespensa = productos
+                                } else {
+                                    Log.e("CompraFragment", "Fragmento no adjunto a una actividad")
+                                }
+                            }
 
+                            override fun onError(error: Exception?) {
+                                Log.e(
+                                    "CompraFragment",
+                                    "Error obteniendo productos: ${error?.message}"
+                                )
+                            }
+                        })
+                    } else {
+                        Log.e("CompraFragment", "No se encontró la casa para el usuario actual")
+                    }
+                }
+
+                override fun onError(error: Exception?) {
+                    Log.e("CompraFragment", "Error obteniendo casa: ${error?.message}")
+                }
+            })
+        } else {
+            Log.e("CompraFragment", "Usuario no autenticado")
+        }
+    }
 
     private fun getCasaForCurrentUser(callback: ObtenerCasaPorIdUsuarioCallBack) {
         val userId = Firebase.auth.currentUser?.uid
@@ -74,17 +117,23 @@ class DespensaFragment : Fragment() {
             override fun onCasaObtenida(casa: Casa?) {
                 if (casa != null) {
                     Log.d("DespensaFragment", "Casa obtenida: ${casa.id}")
-                    realTimeManager.obtenerProductosDespensa(casa.id, object : ObtenerProductosDespensaCallBack {
+                    realTimeManager.obtenerProductosDespensa(
+                        casa.id,
+                        object : ObtenerProductosDespensaCallBack {
 
-                        override fun onProductosObtenidos(productos: MutableList<ProductoDespensa>) {
-                            Log.d("DespensaFragment", "Productos obtenidos: ${productos.size}")
-                            lvListaProductos.adapter = ProductosListaDespensaAdapter(requireContext(), productos)
-                        }
+                            override fun onProductosObtenidos(productos: MutableList<ProductoDespensa>) {
+                                Log.d("DespensaFragment", "Productos obtenidos: ${productos.size}")
+                                lvListaProductos.adapter =
+                                    ProductosListaDespensaAdapter(requireContext(), productos)
+                            }
 
-                        override fun onError(error: Exception?) {
-                            Log.e("DespensaFragment", "Error obteniendo productos: ${error?.message}")
-                        }
-                    })
+                            override fun onError(error: Exception?) {
+                                Log.e(
+                                    "DespensaFragment",
+                                    "Error obteniendo productos: ${error?.message}"
+                                )
+                            }
+                        })
                 } else {
                     Log.e("DespensaFragment", "No se encontró la casa para el usuario actual")
                 }
@@ -97,14 +146,13 @@ class DespensaFragment : Fragment() {
     }
 
 
-
     class ProductosListaDespensaAdapter(
         context: Context,
         listaProductos: MutableList<ProductoDespensa>
     ) :
         BaseAdapter() {
         private val mContext: Context = context
-        private val listaDeProductos: MutableList<ProductoDespensa> = listaProductos
+        internal val listaDeProductos: MutableList<ProductoDespensa> = listaProductos
 
         override fun getCount(): Int {
             return listaDeProductos.size
@@ -125,11 +173,21 @@ class DespensaFragment : Fragment() {
 
             val producto = listaDeProductos[position]
             val tvNombreProducto = view.findViewById<TextView>(R.id.nombreProducto)
-            val tvStockMinimo = view.findViewById<TextView>(R.id.textoStockMinimo)
+            //val tvStockMinimo = view.findViewById<TextView>(R.id.textoStockMinimo)
             val tvStockActual = view.findViewById<TextView>(R.id.textoStockActual)
+            val checkBox = view.findViewById<android.widget.CheckBox>(R.id.checkBox)
 
-            tvNombreProducto.text = producto.nombre
-            tvStockMinimo.text = producto.stockMinimo.toString()
+            checkBox.setOnClickListener {
+                if (checkBox.isChecked) {
+                    producto.seleccionado = true
+                } else {
+                    producto.seleccionado = false
+                }
+            }
+
+
+            tvNombreProducto.text = producto.nombre + " (${producto.stockMinimo}) "
+            //tvStockMinimo.text = producto.stockMinimo.toString()
             tvStockActual.text = producto.stockActual.toString()
 
 
@@ -153,7 +211,11 @@ class DespensaFragment : Fragment() {
         }
     }
 
-    override fun onCreateContextMenu(menu: ContextMenu, v: View, menuInfo: ContextMenu.ContextMenuInfo?) {
+    override fun onCreateContextMenu(
+        menu: ContextMenu,
+        v: View,
+        menuInfo: ContextMenu.ContextMenuInfo?
+    ) {
         super.onCreateContextMenu(menu, v, menuInfo)
         val inflater: MenuInflater = requireActivity().menuInflater
         inflater.inflate(R.menu.context_menu, menu)
@@ -162,35 +224,42 @@ class DespensaFragment : Fragment() {
     override fun onContextItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_delete -> {
-                realTimeManager.obtenerCasaPorIdUsuario(Firebase.auth.currentUser?.uid!!, object : ObtenerCasaPorIdUsuarioCallBack {
-                    override fun onCasaObtenida(casa: Casa?) {
-                        if (casa != null) {
-                            val producto = lvListaProductos.selectedItem as ProductoDespensa
-                            realTimeManager.borrarProductoDespensa(casa.id, producto, object :
-                                BorrarProductoDespensaCallBack {
-                                override fun onProductoBorrado() {
-                                    Log.d("DespensaFragment", "Producto borrado de la despensa")
-                                    listarProductosDespensa()
-                                }
+                realTimeManager.obtenerCasaPorIdUsuario(
+                    Firebase.auth.currentUser?.uid!!,
+                    object : ObtenerCasaPorIdUsuarioCallBack {
+                        override fun onCasaObtenida(casa: Casa?) {
+                            if (casa != null) {
+                                val producto = lvListaProductos.selectedItem as ProductoDespensa
+                                realTimeManager.borrarProductoDespensa(casa.id, producto, object :
+                                    BorrarProductoDespensaCallBack {
+                                    override fun onProductoBorrado() {
+                                        Log.d("DespensaFragment", "Producto borrado de la despensa")
+                                        listarProductosDespensa()
+                                    }
 
-                                override fun onError(error: Exception?) {
-                                    Log.e("DespensaFragment", "Error borrando producto: ${error?.message}")
-                                }
-                            })
-                            listarProductosDespensa()
+                                    override fun onError(error: Exception?) {
+                                        Log.e(
+                                            "DespensaFragment",
+                                            "Error borrando producto: ${error?.message}"
+                                        )
+                                    }
+                                })
+                                listarProductosDespensa()
+                            }
                         }
-                    }
 
-                    override fun onError(error: Exception?) {
-                        Log.e("DespensaFragment", "Error obteniendo casa: ${error?.message}")
-                    }
-                })
+                        override fun onError(error: Exception?) {
+                            Log.e("DespensaFragment", "Error obteniendo casa: ${error?.message}")
+                        }
+                    })
                 true
             }
+
             R.id.action_edit -> {
                 // Acción para la opción del menú 2
                 true
             }
+
             R.id.añadirAListaCompra -> {
 
                 //coger el producto seleccionado
@@ -202,7 +271,9 @@ class DespensaFragment : Fragment() {
                     .setView(R.layout.dialog_cantidad_producto)
                     .setPositiveButton("Añadir") { dialog, _ ->
                         val dialogView = dialog as AlertDialog
-                        val cantidadAComprar = dialogView.findViewById<EditText>(R.id.etCantidadProducto).text.toString().toInt()
+                        val cantidadAComprar =
+                            dialogView.findViewById<EditText>(R.id.etCantidadProducto).text.toString()
+                                .toInt()
                         guardarProductoEnListaCompra(producto.nombre, cantidadAComprar)
                     }
                     .setNegativeButton("Cancelar") { dialog, _ ->
@@ -213,6 +284,7 @@ class DespensaFragment : Fragment() {
 
                 true
             }
+
             else -> super.onContextItemSelected(item)
         }
     }
@@ -274,11 +346,106 @@ class DespensaFragment : Fragment() {
                 .show()
         }
     }
+
+    private fun procesarProductosSeleccionados(accion: (ProductoDespensa) -> Unit) {
+        for (i in 0 until lvListaProductos.count) {
+            val producto = lvListaProductos.adapter.getItem(i) as ProductoDespensa
+            if (producto.seleccionado) {
+                accion(producto)
+            }
+        }
+    }
+
+    private fun borrarProductosSeleccionados() {
+        procesarProductosSeleccionados { producto ->
+            borrarProductoEnDespensa(producto)
+        }
+        listarProductosDespensa()
+    }
+
+    private fun borrarProductoEnDespensa(producto: ProductoDespensa) {
+        getCasaForCurrentUser(object : ObtenerCasaPorIdUsuarioCallBack {
+            override fun onCasaObtenida(casa: Casa?) {
+                if (casa != null) {
+                    Log.d("CompraFragment", "Casa obtenida: ${casa.id}")
+                    realTimeManager.borrarProductoDespensa(casa.id, producto, object :
+                        BorrarProductoDespensaCallBack {
+
+                        override fun onProductoBorrado() {
+                            Toast.makeText(
+                                requireContext(),
+                                "Producto borrado de la despensa",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            listarProductosDespensa()
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Log.e("CompraFragment", "Error borrando producto: ${error?.message}")
+                        }
+                    })
+                } else {
+                    Log.e("CompraFragment", "No se encontró la casa para el usuario actual")
+                }
+            }
+
+            override fun onError(error: Exception?) {
+                Log.e("CompraFragment", "Error obteniendo casa: ${error?.message}")
+            }
+        })
+    }
+
+    private fun configurarBotones() {
+
+        botonAnadirProducto.setOnClickListener {
+            val intent = Intent(context, MainActivity2::class.java)
+            startActivity(intent)
+        }
+        botonBorrarProductosSeleccionados.setOnClickListener {
+            borrarProductosSeleccionados()
+
+        }
+
+        botonEditarProducto.setOnClickListener {
+
+            //buscar en la listaDespensa cuantos productos estan seleccionados
+            var contador = 0
+            var productoParaEditar = ProductoDespensa()
+            for (i in 0 until lvListaProductos.count) {
+                val producto = lvListaProductos.adapter.getItem(i) as ProductoDespensa
+                if (producto.seleccionado) {
+                    productoParaEditar.nombre = producto.nombre
+                    productoParaEditar.stockMinimo = producto.stockMinimo
+                    productoParaEditar.stockActual = producto.stockActual
+                    contador++
+                    if (contador > 1) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Solo puedes editar un producto a la vez",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                }
+            }
+            if (contador == 1){
+                val intent = Intent(context, MainActivity2::class.java)
+                    .putExtra("nombreProducto", productoParaEditar.nombre)
+                    .putExtra("stockMinimo", productoParaEditar.stockMinimo)
+                    .putExtra("stockActual", productoParaEditar.stockActual)
+                startActivity(intent)
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         // Actualizar la lista de productos cuando el fragmento se haya creado
         listarProductosDespensa()
+
+        configurarBotones()
         registerForContextMenu(lvListaProductos)
+
     }
 
     override fun onResume() {
@@ -286,5 +453,6 @@ class DespensaFragment : Fragment() {
         // Actualizar la lista de productos cuando el fragmento vuelva a estar en primer plano
         listarProductosDespensa()
         registerForContextMenu(lvListaProductos)
+
     }
 }
