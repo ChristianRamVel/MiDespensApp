@@ -30,7 +30,7 @@
         android:id="@+id/textoStockMinimo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="0.3"
+        android:layout_weight="0.4"
         android:paddingHorizontal="15dp"
         android:enabled="false"
         android:text="0"
@@ -38,31 +38,33 @@
         android:textSize="20sp"
         tools:ignore="HardcodedText" />
 
-    <TextView
-        android:id="@+id/textoStockActual"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.15"
-        android:text="0"
-        android:textColor="?attr/colorOnSecondary"
-        android:textSize="20sp"
-        tools:ignore="HardcodedText" />
+
 
     <Button
         android:id="@+id/btnMenos"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
         android:drawableLeft="@drawable/minus"
         android:text=""
         android:background="@null"
         tools:ignore="RtlHardcoded" />
 
+    <TextView
+        android:id="@+id/textoStockActual"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.3"
+        android:text="0"
+        android:textAlignment="center"
+        android:textColor="?attr/colorOnSecondary"
+        android:textSize="20sp"
+        tools:ignore="HardcodedText" />
+
     <Button
         android:id="@+id/btnMas"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="10dp"
         android:drawableLeft="@drawable/plus"
         android:text=""
         android:background="@null"

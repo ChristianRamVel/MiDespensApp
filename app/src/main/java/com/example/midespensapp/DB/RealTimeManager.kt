@@ -307,6 +307,97 @@ class RealTimeManager {
     }
 
 
+    fun disminuirCantidadAComprar(
+        casaId: String,
+        producto: ProductoListaCompra,
+        callback: DisminuirCantidadAComprarCallBack
+    ) {
+        val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosListaCompra = snapshot.children.mapNotNull {
+                        it.getValue(ProductoListaCompra::class.java)
+                    }
+
+                    val productoAModificar =
+                        productosListaCompra.find { it.nombre == producto.nombre }
+
+                    if (productoAModificar != null) {
+                        val cantidad = productoAModificar.cantidadAComprar
+                        if (cantidad > 1) {
+                            val productoRef = query.child(productoAModificar.nombre)
+                            productoRef.child("cantidadAComprar").setValue(cantidad - 1)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        callback.onCantidadDisminuida()
+                                    } else {
+                                        callback.onError(task.exception)
+                                    }
+                                }
+                        } else {
+                            callback.onError(DatabaseError("La cantidad a comprar no puede ser menor que 1."))
+                        }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la lista de la compra."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
+
+    fun aumentarCantidadAComprar(
+        casaId: String,
+        producto: ProductoListaCompra,
+        callback: AumentarCantidadAComprarCallBack
+    ) {
+        val query = database.reference.child("casas").child(casaId).child("productosListaCompra")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosListaCompra = snapshot.children.mapNotNull {
+                        it.getValue(ProductoListaCompra::class.java)
+                    }
+
+                    val productoAModificar =
+                        productosListaCompra.find { it.nombre == producto.nombre }
+
+                    if (productoAModificar != null) {
+                        val cantidad = productoAModificar.cantidadAComprar
+                        val productoRef = query.child(productoAModificar.nombre)
+                        productoRef.child("cantidadAComprar").setValue(cantidad + 1)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    callback.onCantidadAumentada()
+                                } else {
+                                    callback.onError(task.exception)
+                                }
+                            }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la lista de la compra."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
+
+
 
     private fun DatabaseError(s: String): Exception? {
         return null

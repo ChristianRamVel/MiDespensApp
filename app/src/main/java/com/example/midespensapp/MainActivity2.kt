@@ -61,8 +61,9 @@ class MainActivity2 : AppCompatActivity() {
             ) {
                 guardarProductoEnDespensa(
                     nombreProducto,
-                    cantidadMinimaProductoStr.toInt(),
-                    cantidadActualProductoStr.toInt()
+                    cantidadActualProductoStr.toInt(),
+                    cantidadMinimaProductoStr.toInt()
+
                 )
             }
         } else {
@@ -80,15 +81,27 @@ class MainActivity2 : AppCompatActivity() {
                 val cantidadActualProducto = cantidadActualProductoStr.toInt()
                 val cantidadAComprar = cantidadAComprarStr.toInt()
 
+                Log.d("MainActivity2", "Nombre: $nombreProducto")
+                Log.d("MainActivity2", "Cantidad mínima: $cantidadMinimaProducto")
+                Log.d("MainActivity2", "Cantidad actual: $cantidadActualProducto")
+                Log.d("MainActivity2", "Cantidad a comprar: $cantidadAComprar")
+
                 guardarProductoEnDespensa(
                     nombreProducto,
-                    cantidadMinimaProducto,
-                    cantidadActualProducto
+                    cantidadActualProducto,
+                    cantidadMinimaProducto
+
                 )
                 guardarProductoEnListaCompra(
                     nombreProducto,
                     cantidadAComprar
                 )
+
+                etNombreProducto.text.clear()
+                etCantidadMinimaProducto.text.clear()
+                etCantidadActualProducto.text.clear()
+                etCantidadAComprar.text.clear()
+                checkbox.isChecked = false
             }
         }
     }
@@ -198,8 +211,9 @@ class MainActivity2 : AppCompatActivity() {
     //funcion para guardar producto en despensa
     internal fun guardarProductoEnDespensa(
         nombreProducto: String,
-        cantidadMinimaProducto: Int,
-        cantidadActualProducto: Int
+        cantidadActualProducto: Int,
+        cantidadMinimaProducto: Int
+
     ){
         // 1. Obtener referencia a la base de datos Firebase
         val databaseReference = FirebaseDatabase.getInstance().reference
@@ -215,8 +229,9 @@ class MainActivity2 : AppCompatActivity() {
                         val productoDespensa =
                             ProductoDespensa(
                                 nombreProducto,
-                                cantidadMinimaProducto,
-                                cantidadActualProducto
+                                cantidadActualProducto,
+                                cantidadMinimaProducto
+
                             )
                         // 4. Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
                         databaseReference.child("casas").child(casa.id)

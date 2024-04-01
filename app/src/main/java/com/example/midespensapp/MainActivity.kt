@@ -169,6 +169,7 @@ class MainActivity : AppCompatActivity() {
                                             getString(R.string.lista_de_compra_borrada),
                                             Toast.LENGTH_SHORT
                                         ).show()
+
                                     }
 
                                     override fun onError(error: Exception?) {

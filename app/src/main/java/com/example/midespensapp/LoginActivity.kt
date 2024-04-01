@@ -108,7 +108,6 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Log.d(TAG, "signInWithEmail:success")
                         val user = auth.currentUser
                         updateUI(user)
                     } else {
@@ -128,11 +127,9 @@ class LoginActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Log.d(TAG, "createUserWithEmail:success")
                         val userId = auth.currentUser?.uid
                         crearCasaNueva(object : CrearCasaCallBack {
                             override fun onCasaCreada(casa: Casa) {
-                                Log.d(TAG, "Casa creada con éxito")
                                 addUserToDatabase(email, casa.id, userId.toString())
                                 signIn(email, password)
                             }
@@ -159,7 +156,6 @@ class LoginActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        Log.d(TAG, "createUserWithEmail:success")
                         val userId = auth.currentUser?.uid
                         addUserToDatabase(email, idCasa, userId.toString())
                         signIn(email, password)
@@ -179,9 +175,7 @@ class LoginActivity : AppCompatActivity() {
     private fun crearCasaNueva(callback: CrearCasaCallBack) {
         realTimeManager.crearCasa(object : CrearCasaCallBack {
             override fun onCasaCreada(casa: Casa) {
-                Log.d(TAG, "Casa creada con éxito")
-                Toast.makeText(this@LoginActivity, "Casa creada con éxito", Toast.LENGTH_SHORT)
-                    .show()
+
                 callback.onCasaCreada(casa)
             }
 
@@ -199,12 +193,7 @@ class LoginActivity : AppCompatActivity() {
         val usuario = Usuario(email, idCasa)
         usersRef.child(userId).setValue(usuario)
             .addOnSuccessListener {
-                Log.d(TAG, "Usuario agregado a la base de datos")
-                Toast.makeText(
-                    this@LoginActivity,
-                    "Usuario creado exitosamente",
-                    Toast.LENGTH_SHORT
-                ).show()
+
             }
             .addOnFailureListener { e ->
                 Log.e(TAG, "Error al agregar usuario a la base de datos", e)
@@ -218,7 +207,6 @@ class LoginActivity : AppCompatActivity() {
         realTimeManager.comprobarCasaExiste(idCasa, object : ComprobarCasaExisteCallBack {
             override fun onCasaExiste(existe: Boolean) {
                 if (existe) {
-                    Log.d(TAG, "La casa con ID '$idCasa' existe.")
                     createAccount(email, password,idCasa)
                 } else {
                     Toast.makeText(this@LoginActivity, "La casa no existe.", Toast.LENGTH_SHORT)

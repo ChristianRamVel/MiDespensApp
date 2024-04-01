@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class ProductoDespensa(
     @SerializedName("nombre") val nombre: String = "",
-    @SerializedName("stockActual") val stockActual: Int = 0,
+    @SerializedName("stockActual") var stockActual: Int = 0,
     @SerializedName("stockMinimo") val stockMinimo: Int = 0
 ){
     // Constructor sin argumentos requerido por Firebase para deserialización

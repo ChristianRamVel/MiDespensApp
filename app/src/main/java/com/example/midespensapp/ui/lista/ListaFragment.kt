@@ -14,8 +14,11 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.midespensapp.DB.AumentarCantidadAComprarCallBack
 import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
+import com.example.midespensapp.DB.DisminuirCantidadAComprarCallBack
 import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.DB.ObtenerProductosDespensaCallBack
 import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
 import com.example.midespensapp.DB.RealTimeManager
 import com.example.midespensapp.MainActivity3
@@ -36,7 +39,7 @@ class ListaFragment : Fragment() {
     private lateinit var botonAnadirProducto: Button
     lateinit var botonAnadirDespensa: Button
     lateinit var botonBorrarProductosSeleccionados: Button
-    var alMenosUnProductoSeleccionado = false
+    private var productosDespensa = mutableListOf<ProductoDespensa>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
@@ -47,11 +50,53 @@ class ListaFragment : Fragment() {
         botonAnadirProducto = view.findViewById(R.id.btn_add_producto)
         botonAnadirDespensa = view.findViewById(R.id.btn_añadir_seleccionados_despensa)
         botonBorrarProductosSeleccionados = view.findViewById(R.id.btn_borrar_seleccionados)
-
+        rellenarListaDespensa()
 
         return view
     }
 
+    private fun rellenarListaDespensa() {
+        val userId = Firebase.auth.currentUser?.uid
+        if (userId != null) {
+            realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                ObtenerCasaPorIdUsuarioCallBack {
+                override fun onCasaObtenida(casa: Casa?) {
+                    if (casa != null) {
+                        Log.d("CompraFragment", "Casa obtenida: ${casa.id}")
+                        realTimeManager.obtenerProductosDespensa(casa.id, object :
+                            ObtenerProductosDespensaCallBack {
+                            override fun onProductosObtenidos(productos: MutableList<ProductoDespensa>) {
+                                if (isAdded) { // Verifica si el fragmento está adjunto a la actividad
+                                    Log.d(
+                                        "CompraFragment",
+                                        "Productos obtenidos: ${productos.size}"
+                                    )
+                                    productosDespensa = productos
+                                } else {
+                                    Log.e("CompraFragment", "Fragmento no adjunto a una actividad")
+                                }
+                            }
+
+                            override fun onError(error: Exception?) {
+                                Log.e(
+                                    "CompraFragment",
+                                    "Error obteniendo productos: ${error?.message}"
+                                )
+                            }
+                        })
+                    } else {
+                        Log.e("CompraFragment", "No se encontró la casa para el usuario actual")
+                    }
+                }
+
+                override fun onError(error: Exception?) {
+                    Log.e("CompraFragment", "Error obteniendo casa: ${error?.message}")
+                }
+            })
+        } else {
+            Log.e("CompraFragment", "Usuario no autenticado")
+        }
+    }
 
 
     private fun configurarBotones() {
@@ -70,6 +115,7 @@ class ListaFragment : Fragment() {
             listarProductosListaCompra()
         }
     }
+
     private fun getCasaForCurrentUser(callback: ObtenerCasaPorIdUsuarioCallBack) {
         val userId = Firebase.auth.currentUser?.uid
         if (userId != null) {
@@ -111,7 +157,6 @@ class ListaFragment : Fragment() {
                         BorrarProductoDespensaCallBack {
 
                         override fun onProductoBorrado() {
-                            Log.d("CompraFragment", "Producto borrado de la lista de la compra correctamente")
                         }
 
                         override fun onError(error: Exception?) {
@@ -141,7 +186,8 @@ class ListaFragment : Fragment() {
                         override fun onProductosObtenidos(productos: MutableList<ProductoListaCompra>) {
                             if (isAdded) { // Verifica si el fragmento está adjunto a la actividad
                                 Log.d("CompraFragment", "Productos obtenidos: ${productos.size}")
-                                lvListaProductos.adapter = ProductosListaCompraAdapter(requireContext(), productos)
+                                lvListaProductos.adapter =
+                                    ProductosListaCompraAdapter(requireContext(), productos)
                             } else {
 
                                 Log.e("CompraFragment", "Fragmento no adjunto a una actividad")
@@ -163,7 +209,7 @@ class ListaFragment : Fragment() {
         })
     }
 
-    private fun guardarProductoEnDespensaDesdeLista(nombreProducto: String, cantidadComprada:Int) {
+    private fun guardarProductoEnDespensaDesdeLista(nombreProducto: String, cantidadComprada: Int) {
         // 1. Obtener referencia a la base de datos Firebase
         val databaseReference = FirebaseDatabase.getInstance().reference
 
@@ -174,55 +220,56 @@ class ListaFragment : Fragment() {
                 ObtenerCasaPorIdUsuarioCallBack {
                 override fun onCasaObtenida(casa: Casa?) {
                     if (casa != null) {
+                        //buscar el nombre del producto en la listaDespensa
+                        var productoDespensa =
+                            productosDespensa.find { it.nombre == nombreProducto }
+                        if (productoDespensa != null) {
+                            // El producto ya existe en la despensa
+                            productoDespensa.stockActual += cantidadComprada
 
-                        //comprobamos si el producto ya existe en la despensa
-                        if(casa.productosDespensa.containsKey(nombreProducto)){
-                        //actualizar el producto, sumando la cantidad comprada a la cantidadActual del producto
-                            val productoDespensa = casa.productosDespensa[nombreProducto]
-                            val cantidadActual = productoDespensa?.stockActual?.plus(cantidadComprada)
-                            databaseReference.child("casas").child(casa.id).child("productosDespensa").child(nombreProducto).child("stockActual").setValue(cantidadActual)
+                            // Actualizar el stock actual del producto en la despensa en la base de datos
+                            databaseReference.child("casas").child(casa.id)
+                                .child("productosDespensa")
+                                .child(nombreProducto).setValue(productoDespensa)
                                 .addOnSuccessListener {
-                                    Log.d("ListaFragment", "Producto $nombreProducto actualizado en la despensa correctamente")
-                                    // Éxito al guardar el producto en la despensa
-                                    Toast.makeText(requireContext(), "Producto actualizado en la despensa correctamente", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Producto añadido a la despensa",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                                .addOnFailureListener { e ->
-                                    // Error al guardar el producto en la despensa
-                                    Log.e("ListaFragment", "Error al guardar el producto en la despensa", e)
-                                    Toast.makeText(requireContext(), "Error al guardar el producto en la despensa", Toast.LENGTH_SHORT).show()
+                                .addOnFailureListener {
+                                    Log.e(
+                                        "ListaFragment",
+                                        "Error actualizando producto en la despensa: ${it.message}"
+                                    )
+                                    Toast.makeText(
+                                        requireContext(),
+                                        "Error añadiendo producto a la despensa",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
-                        }else{
-                            // 3. Crear un objeto ProductoDespensa con los datos proporcionados
-                            val productoDespensa = ProductoDespensa(nombreProducto, cantidadComprada, 1)
 
-                            // 4. Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
-                            databaseReference.child("casas").child(casa.id).child("productosDespensa").child(nombreProducto).setValue(productoDespensa)
-                                .addOnSuccessListener {
-                                    Log.d("ListaFragment", "Producto $nombreProducto guardado en la despensa correctamente")
-                                    // Éxito al guardar el producto en la despensa
-                                    Toast.makeText(requireContext(), "Producto guardado en la despensa correctamente", Toast.LENGTH_SHORT).show()
-                                }
-                                .addOnFailureListener { e ->
-                                    // Error al guardar el producto en la despensa
-                                    Log.e("ListaFragment", "Error al guardar el producto en la despensa", e)
-                                    Toast.makeText(requireContext(), "Error al guardar el producto en la despensa", Toast.LENGTH_SHORT).show()
-                                }
+                        } else {
+                            // El producto no existe en la despensa
+                            productoDespensa = ProductoDespensa(nombreProducto, cantidadComprada)
+                            productosDespensa.add(productoDespensa)
                         }
-                    } else {
-                        Log.e("ListaFragment", "No se encontró la casa para el usuario actual")
-                        Toast.makeText(requireContext(), "No se encontró la casa para el usuario actual", Toast.LENGTH_SHORT).show()
                     }
                 }
 
                 override fun onError(error: Exception?) {
                     Log.e("ListaFragment", "Error obteniendo casa: ${error?.message}")
-                    Toast.makeText(requireContext(), "Error obteniendo casa: ${error?.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Error obteniendo casa: ${error?.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             })
         } else {
-            // El usuario no está autenticado
-            Log.e("ListaFragment", "El usuario no está autenticado")
-            Toast.makeText(requireContext(), "El usuario no está autenticado", Toast.LENGTH_SHORT).show()
+            Log.e("ListaFragment", "Usuario no autenticado")
+            Toast.makeText(requireContext(), "Usuario no autenticado", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -234,6 +281,7 @@ class ListaFragment : Fragment() {
         BaseAdapter() {
         private val mContext: Context = context
         private val listaDeProductos: MutableList<ProductoListaCompra> = listaProductos
+        val realTimeManager = RealTimeManager()
 
         override fun getCount(): Int {
             return listaDeProductos.size
@@ -269,8 +317,47 @@ class ListaFragment : Fragment() {
 
             val btnMas = view.findViewById<Button>(R.id.btnMas)
             btnMas.setOnClickListener {
-                // Aumentar la cantidad del producto en la lista de la compra
-                //aumentarCantidadProducto(producto)
+                val userId = Firebase.auth.currentUser?.uid
+                if (userId != null) {
+                    realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                        ObtenerCasaPorIdUsuarioCallBack {
+                        override fun onCasaObtenida(casa: Casa?) {
+                            if (casa != null) {
+                                realTimeManager.aumentarCantidadAComprar(casa.id, producto, object :
+                                    AumentarCantidadAComprarCallBack {
+                                    override fun onCantidadAumentada() {
+                                        Toast.makeText(
+                                            mContext,
+                                            "Producto añadido a la lista de la compra",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+
+                                    override fun onError(error: Exception?) {
+                                        Toast.makeText(
+                                            mContext,
+                                            "Error añadiendo producto a la lista de la compra",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
+                            }
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Toast.makeText(
+                                mContext,
+                                "Error obteniendo casa",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(mContext, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+
                 tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
             }
@@ -278,7 +365,40 @@ class ListaFragment : Fragment() {
             val btnMenos = view.findViewById<Button>(R.id.btnMenos)
             btnMenos.setOnClickListener {
                 // Disminuir la cantidad del producto en la lista de la compra
-                //disminuirCantidadProducto(producto)
+                val userId = Firebase.auth.currentUser?.uid
+                if (userId != null) {
+                    realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                        ObtenerCasaPorIdUsuarioCallBack {
+                        override fun onCasaObtenida(casa: Casa?) {
+                            if (casa != null) {
+                                realTimeManager.disminuirCantidadAComprar(
+                                    casa.id,
+                                    producto,
+                                    object :
+                                        DisminuirCantidadAComprarCallBack {
+                                        override fun onCantidadDisminuida() {
+
+                                        }
+
+                                        override fun onError(error: Exception?) {
+
+                                        }
+                                    })
+                            }
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Toast.makeText(
+                                mContext,
+                                "Error obteniendo casa",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(mContext, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+                        .show()
+                }
                 tvCantidadProducto.text = producto.cantidadAComprar.toString()
 
             }
