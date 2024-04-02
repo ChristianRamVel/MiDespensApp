@@ -41,6 +41,7 @@
     <string name="borrar_compra">Delete shopping list</string>
     <string name="informacion">Information</string>
     <string name="informacion_texto">MyPantryApp is an application to manage your home pantry.\n
+        \n● In the pantry, you will be able to see the product, with the minimum stock quantity you have set in parentheses and the current stock quantity you have, which you can increase or decrease using the + and - buttons, respectively.
     \n● You can add products to the pantry and shopping list.
     \n● Share your pantry with other users.
     \n● From the + button, you can add your products to the pantry or shopping list, and you will also have the option to add them to both places from a single entry.

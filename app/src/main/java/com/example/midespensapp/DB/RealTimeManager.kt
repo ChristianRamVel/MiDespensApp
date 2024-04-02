@@ -21,7 +21,7 @@ class RealTimeManager {
     fun obtenerUsuariosPorIdCasa(casaId: String, callback: ObtenerUsuariosPorIdCasaCallBack) {
         val query = database.reference.child("usuarios").orderByChild("idCasa").equalTo(casaId)
 
-        query.addValueEventListener(object : ValueEventListener {
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
                     val usuarios = snapshot.children.mapNotNull {
@@ -161,19 +161,21 @@ class RealTimeManager {
         })
     }
 
-    fun comprobarCasaExiste(casaId: String, callback: ComprobarCasaExisteCallBack) {
-        val query = database.reference.child("casas").child(casaId)
-
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
+    fun comprobarCasaExiste(keyCasa: String, callback: ComprobarCasaExisteCallBack) {
+        val casaRef = FirebaseDatabase.getInstance().getReference("casas")
+        casaRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    callback.onCasaExiste(true)
+                if (snapshot.hasChild(keyCasa)) {
+                    // La casa existe
+                    callback.onCasaExiste()
                 } else {
-                    callback.onCasaExiste(false)
+                    // La casa no existe
+                    callback.onCasaNoExiste()
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
+                // Error al acceder a los datos
                 callback.onError(error.toException())
             }
         })

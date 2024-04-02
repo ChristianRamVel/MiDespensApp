@@ -76,7 +76,7 @@ class LoginActivity : AppCompatActivity() {
                 .setPositiveButton("Aceptar") { dialog, _ ->
                     val etCasaId = (dialog as AlertDialog).findViewById<EditText>(R.id.etCasaId)
                     if (etCasaId != null && etCasaId.text.isNotEmpty()) {
-                        val idCasa = etCasaId.text.toString()
+                        val idCasa = etCasaId.text.toString().trim()
                         checkIfCasaExists(
                             idCasa,
                             etEmail.text.toString(),
@@ -215,13 +215,17 @@ class LoginActivity : AppCompatActivity() {
     private fun checkIfCasaExists(idCasa: String, email: String, password: String) {
 
         realTimeManager.comprobarCasaExiste(idCasa, object : ComprobarCasaExisteCallBack {
-            override fun onCasaExiste(existe: Boolean) {
-                if (existe) {
+            override fun onCasaExiste() {
                     createAccount(email, password, idCasa)
-                } else {
-                    Toast.makeText(this@LoginActivity, "La casa no existe.", Toast.LENGTH_SHORT)
-                        .show()
-                }
+
+            }
+
+            override fun onCasaNoExiste() {
+                Toast.makeText(
+                    this@LoginActivity,
+                    "La casa no existe, por favor, introduzca un ID de casa válido",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
 
             override fun onError(error: Exception?) {

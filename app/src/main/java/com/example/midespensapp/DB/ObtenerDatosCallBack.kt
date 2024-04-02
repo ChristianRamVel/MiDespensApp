@@ -24,7 +24,9 @@ interface ObtenerCasaPorIdUsuarioCallBack {
 }
 
 interface ComprobarCasaExisteCallBack {
-    fun onCasaExiste(existe: Boolean)
+    fun onCasaExiste()
+
+    fun onCasaNoExiste()
     fun onError(error: Exception?)
 }
 

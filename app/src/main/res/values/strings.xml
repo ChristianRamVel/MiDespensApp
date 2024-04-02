@@ -40,6 +40,7 @@
     <string name="borrar_compra">Borrar la lista de la compra</string>
     <string name="informacion">Informacion</string>
     <string name="informacion_texto">MiDespensaApp es una aplicación para gestionar la despensa de tu hogar.\n
+        \n● En la despensa podras ver el producto, entre parentesis la cantidad minima de stock que has establecido y la cantidad actual que tienes en stock, la cual podras aumentar o disminuir desde el boton + y - respectivamente.
         \n● Puedes añadir productos a la despensa y a la lista de la compra.
         \n● Compartir tu despensa con otros usuarios.
         \n● Desde el boton +, podras añadir tus productos a la despensa o a la lista, y tambien tendras la opcion de añadirlos a los dos sitios desde un unico registro.

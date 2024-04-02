@@ -9,52 +9,54 @@
     <string name="producto">Producto</string>
     <string name="cantidad_en_stock">Cantidad actual en stock</string>
     <string name="cantidadParaComprar">Cantidad a comprar</string>
-    <string name="cantidadAlmacenada">CantidadAlmacenada</string>
+    <string name="cantidadAlmacenada">Cantidad almacenada</string>
     <string name="nombreProducto">Nombre del producto</string>
-    <string name="cantidadMinimaProducto">Cantidad minima de stock</string>
+    <string name="cantidadMinimaProducto">Cantidad mínima de stock</string>
     <string name="cantidadActualProducto">Cantidad actual del producto</string>
-    <string name="registar_prod_despensa">Registar producto</string>
-    <string name="instruccionesRegistroProducto">Si la cantidad es menor que el stock minimo, se entendera que quiere añadir a la lista de la compra este nuevo producto</string>
+    <string name="registar_prod_despensa">Registrar producto</string>
+    <string name="instruccionesRegistroProducto">Si la cantidad es menor que el stock mínimo, se entenderá que quieres añadir a la lista de la compra este nuevo producto.</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password</string>
+    <string name="prompt_password">Contraseña</string>
     <string name="action_sign_in">Acceder</string>
     <string name="action_register">Registrarse</string>
-    <string name="welcome">"Bienvenido !"</string>
-    <string name="invalid_username">Usuario no valido</string>
-    <string name="invalid_password">La contraseña debe ser mayor de 5 cracteres</string>
-    <string name="login_failed">"Login failed"</string>
+    <string name="welcome">¡Bienvenido!</string>
+    <string name="invalid_username">Usuario no válido</string>
+    <string name="invalid_password">La contraseña debe tener más de 5 caracteres</string>
+    <string name="login_failed">Error al iniciar sesión</string>
     <string name="checkbox">Añadir a la lista de la compra</string>
     <string name="registrarse">Registrarse</string>
-    <string name="cerrar_sesion">Cerrar Sesion</string>
-    <string name="registrarseEnCasaExistente">Registrar en casa existente</string>
-    <string name="inserta_casa_id">Inserta el id de la casa</string>
-    <string name="casa_id">Id de la casa</string>
-    <string name="stockminimo">Minimo</string>
+    <string name="cerrar_sesion">Cerrar Sesión</string>
+    <string name="registrarseEnCasaExistente">Registrarse en una casa existente</string>
+    <string name="inserta_casa_id">Inserta el ID de la casa</string>
+    <string name="casa_id">ID de la casa</string>
+    <string name="stockminimo">Mínimo</string>
     <string name="stock_actual">Actual</string>
     <string name="comprado">Comprado</string>
-    <string name="registar_prod_despensa_titulo">Registrar producto en despensa</string>
-    <string name="anadir_a_despensa">Añadir a despensa</string>
-    <string name="registar_prod_listaCompra_titulo">Registrar producto en lista de la compra</string>
-    <string name="guardar_en_despensa">Guardar en Despensa</string>
-    <string name="enviar_casa">Enviar codigo de la casa</string>
+    <string name="registar_prod_despensa_titulo">Registrar producto en la despensa</string>
+    <string name="anadir_a_despensa">Añadir a la despensa</string>
+    <string name="registar_prod_listaCompra_titulo">Registrar producto en la lista de la compra</string>
+    <string name="guardar_en_despensa">Guardar en la despensa</string>
+    <string name="enviar_casa">Enviar código de la casa</string>
     <string name="borrar_despensa">Borrar la despensa</string>
     <string name="borrar_compra">Borrar la lista de la compra</string>
-    <string name="informacion">Informacion</string>
-    <string name="informacion_texto">MiDespensaApp es una aplicación para gestionar la despensa de tu hogar.\n
-        \n● Puedes añadir productos a la despensa y a la lista de la compra.
-        \n● Compartir tu despensa con otros usuarios.
-        \n● Desde el boton +, podras añadir tus productos a la despensa o a la lista, y tambien tendras la opcion de añadirlos a los dos sitios desde un unico registro.
-        \n● Si quieres eliminar productos de alguna de tus listas podras marcarlos y pulsar la papelera.
-        \n● Si quieres mandar productos desde la lista de la compra a la despensa, podras marcarlos y pulsar el boton a la izquierda de la papelera con el icono de una lista.
-        \n● Si quieres editar el stock minimo de un producto de tu despensa, podras marcarlo y pulsar el boton a la izquierda de la papelera con el icono de un lapiz.
+    <string name="informacion">Información</string>
+    <string name="informacion_texto">
+MiDespensaApp es una aplicación para gestionar la despensa de tu hogar.\n
+\n● En la despensa podrás ver el producto, entre paréntesis, la cantidad mínima de stock que has establecido y la cantidad actual que tienes en stock, la cual podrás aumentar o disminuir desde el botón + y - respectivamente.
+\n● Puedes añadir productos a la despensa y a la lista de la compra.
+\n● Compartir tu despensa con otros usuarios.
+\n● Desde el botón +, podrás añadir tus productos a la despensa o a la lista, y también tendrás la opción de añadirlos a los dos sitios desde un único registro.
+\n● Si quieres eliminar productos de alguna de tus listas podrás marcarlos y pulsar la papelera.
+\n● Si quieres enviar productos desde la lista de la compra a la despensa, podrás marcarlos y pulsar el botón a la izquierda de la papelera con el icono de una lista.
+\n● Si quieres editar el stock mínimo de un producto de tu despensa, podrás marcarlo y pulsar el botón a la izquierda de la papelera con el icono de un lápiz.
     </string>
     <string name="aceptar">Aceptar</string>
     <string name="el_usuario_no_est_autenticado">El usuario no está autenticado</string>
-    <string name="error_obteniendo_casa">Error obteniendo casa: %1$s</string>
-    <string name="error_borrando_lista_de_compra">Error borrando lista de compra: %1$s</string>
+    <string name="error_obteniendo_casa">Error al obtener la casa: %1$s</string>
+    <string name="error_borrando_lista_de_compra">Error al borrar la lista de compra: %1$s</string>
     <string name="lista_de_compra_borrada">Lista de compra borrada</string>
-    <string name="error_borrando_despensa">Error borrando despensa: %1$s</string>
+    <string name="error_borrando_despensa">Error al borrar la despensa: %1$s</string>
     <string name="despensa_borrada">Despensa borrada</string>
     <string name="edit">Editar</string>
     <string name="delete">Eliminar</string>

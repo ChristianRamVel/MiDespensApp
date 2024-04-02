@@ -61,6 +61,12 @@ class MainActivity2 : AppCompatActivity() {
 
         botonRegistrar.setOnClickListener {
             registrarProducto()
+
+            etNombreProducto.text.clear()
+            etCantidadMinimaProducto.text.clear()
+            etCantidadActualProducto.text.clear()
+            etCantidadAComprar.text.clear()
+            checkbox.isChecked = false
         }
     }
 

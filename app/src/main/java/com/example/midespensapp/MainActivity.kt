@@ -2,6 +2,7 @@ package com.example.midespensapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -249,6 +250,8 @@ class MainActivity : AppCompatActivity() {
                                         realTimeManager.obtenerUsuariosPorIdCasa(casa.id, object :
                                             ObtenerUsuariosPorIdCasaCallBack {
                                             override fun onUsuariosObtenidos(usuarios: List<String>) {
+                                                Log.d("USUARIOS", usuarios.toString())
+                                                Log.d("USUARIOS", usuarios.size.toString())
                                                 if (usuarios.size == 1) {
                                                     //borrar la casa
                                                     realTimeManager.borrarCasa(casa.id, object :
