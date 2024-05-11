@@ -1,1 +1,1 @@
-Descargar el archivo .apk para descargar la aplicacion
+Usa la aplicacion descargando el archivo .apk
