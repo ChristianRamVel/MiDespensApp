@@ -1,6 +1,5 @@
-package com.example.midespensapp.clases
+package com.example.midespensapp.modelo
 
-import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 class Usuario(

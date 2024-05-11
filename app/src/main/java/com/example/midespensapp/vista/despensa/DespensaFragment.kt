@@ -1,4 +1,4 @@
-package com.example.midespensapp.ui.despensa
+package com.example.midespensapp.vista.despensa
 
 import android.app.AlertDialog
 import android.content.Context
@@ -18,15 +18,16 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
-import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
-import com.example.midespensapp.DB.ObtenerProductosDespensaCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.MainActivity2
 import com.example.midespensapp.R
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.controlador.AumentarStockDespensaCallBack
+import com.example.midespensapp.controlador.BorrarProductoDespensaCallBack
+import com.example.midespensapp.controlador.DisminuirStockDespensaCallBack
+import com.example.midespensapp.controlador.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.controlador.ObtenerProductosDespensaCallBack
+import com.example.midespensapp.controlador.RealTimeManager
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -153,6 +154,7 @@ class DespensaFragment : Fragment() {
         BaseAdapter() {
         private val mContext: Context = context
         internal val listaDeProductos: MutableList<ProductoDespensa> = listaProductos
+        val realTimeManager = RealTimeManager()
 
         override fun getCount(): Int {
             return listaDeProductos.size
@@ -193,8 +195,43 @@ class DespensaFragment : Fragment() {
 
             val btnMas = view.findViewById<Button>(R.id.btnMas)
             btnMas.setOnClickListener {
-                // Aumentar la cantidad del producto en la lista de la compra
-                //aumentarCantidadProducto(producto)
+                val userId = Firebase.auth.currentUser?.uid
+                if (userId != null) {
+                    realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                        ObtenerCasaPorIdUsuarioCallBack {
+                        override fun onCasaObtenida(casa: Casa?) {
+                            if (casa != null) {
+                                realTimeManager.aumentarStockDespensa(casa.id, producto, object :
+                                    AumentarStockDespensaCallBack {
+                                    override fun onStockAumentado() {
+
+                                    }
+
+                                    override fun onError(error: Exception?) {
+                                        Toast.makeText(
+                                            mContext,
+                                            "Error añadiendo producto a la despensa",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
+                            }
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Toast.makeText(
+                                mContext,
+                                "Error obteniendo casa",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(mContext, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+                        .show()
+                }
+
+
                 tvStockActual.text = producto.stockActual.toString()
 
             }
@@ -202,7 +239,44 @@ class DespensaFragment : Fragment() {
             val btnMenos = view.findViewById<Button>(R.id.btnMenos)
             btnMenos.setOnClickListener {
                 // Disminuir la cantidad del producto en la lista de la compra
-                //disminuirCantidadProducto(producto)
+                val userId = Firebase.auth.currentUser?.uid
+                if (userId != null) {
+                    realTimeManager.obtenerCasaPorIdUsuario(userId, object :
+                        ObtenerCasaPorIdUsuarioCallBack {
+                        override fun onCasaObtenida(casa: Casa?) {
+                            if (casa != null) {
+                                realTimeManager.disminuirStockDespensa(
+                                    casa.id,
+                                    producto,
+                                    object :
+                                        DisminuirStockDespensaCallBack {
+                                        override fun onStockDisminuido() {
+
+                                        }
+
+                                        override fun onError(error: Exception?) {
+                                            Toast.makeText(
+                                                mContext,
+                                                "Error disminuyendo stock",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    })
+                            }
+                        }
+
+                        override fun onError(error: Exception?) {
+                            Toast.makeText(
+                                mContext,
+                                "Error obteniendo casa",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    })
+                } else {
+                    Toast.makeText(mContext, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+                        .show()
+                }
                 tvStockActual.text = producto.stockActual.toString()
 
             }
@@ -398,7 +472,7 @@ class DespensaFragment : Fragment() {
     private fun configurarBotones() {
 
         botonAnadirProducto.setOnClickListener {
-            val intent = Intent(context, MainActivity2::class.java)
+            val intent = Intent(context, AnadirDespensaActivity::class.java)
             startActivity(intent)
         }
         botonBorrarProductosSeleccionados.setOnClickListener {
@@ -429,7 +503,7 @@ class DespensaFragment : Fragment() {
                 }
             }
             if (contador == 1){
-                val intent = Intent(context, MainActivity2::class.java)
+                val intent = Intent(context, AnadirDespensaActivity::class.java)
                     .putExtra("nombreProducto", productoParaEditar.nombre)
                     .putExtra("stockMinimo", productoParaEditar.stockMinimo)
                     .putExtra("stockActual", productoParaEditar.stockActual)

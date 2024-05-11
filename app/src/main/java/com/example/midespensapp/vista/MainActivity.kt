@@ -1,4 +1,4 @@
-package com.example.midespensapp
+package com.example.midespensapp.vista
 
 import android.content.Intent
 import android.os.Bundle
@@ -12,14 +12,15 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.example.midespensapp.DB.BorrarCasaCallBack
-import com.example.midespensapp.DB.BorrarProductoDespensaCallBack
-import com.example.midespensapp.DB.BorrarUsuarioCallBack
-import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
-import com.example.midespensapp.DB.ObtenerUsuariosPorIdCasaCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.clases.Casa
+import com.example.midespensapp.R
+import com.example.midespensapp.controlador.BorrarCasaCallBack
+import com.example.midespensapp.controlador.BorrarProductoDespensaCallBack
+import com.example.midespensapp.controlador.BorrarUsuarioCallBack
+import com.example.midespensapp.controlador.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.controlador.ObtenerUsuariosPorIdCasaCallBack
+import com.example.midespensapp.controlador.RealTimeManager
 import com.example.midespensapp.databinding.ActivityMainBinding
+import com.example.midespensapp.modelo.Casa
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
@@ -41,8 +42,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = binding.navView
 
         val navController = findNavController(R.id.nav_host_fragment_activity_main)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
+
         val appBarConfiguration = AppBarConfiguration(
             setOf(
                 R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications

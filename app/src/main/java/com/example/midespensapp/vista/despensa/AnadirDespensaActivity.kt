@@ -1,4 +1,4 @@
-package com.example.midespensapp
+package com.example.midespensapp.vista.despensa
 
 import android.os.Bundle
 import android.util.Log
@@ -7,15 +7,16 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.R
+import com.example.midespensapp.controlador.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.controlador.RealTimeManager
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity2 : AppCompatActivity() {
+class AnadirDespensaActivity : AppCompatActivity() {
 
     private val realTimeManager = RealTimeManager()
     private lateinit var etNombreProducto: EditText
@@ -76,9 +77,9 @@ class MainActivity2 : AppCompatActivity() {
         val cantidadActualProductoStr = etCantidadActualProducto.text.toString()
 
         if (!checkbox.isChecked) {
-            if (validarNombreProducto(nombreProducto) && validarCantidadMinima(
-                    cantidadMinimaProductoStr
-                ) && validarCantidadActual(cantidadActualProductoStr)
+            if (validarNombreProducto(nombreProducto) &&
+                validarCantidadMinima(cantidadMinimaProductoStr) &&
+                validarCantidadActual(cantidadActualProductoStr)
             ) {
                 guardarProductoEnDespensa(
                     nombreProducto,
@@ -92,11 +93,10 @@ class MainActivity2 : AppCompatActivity() {
             val cantidadActualProductoStr = etCantidadActualProducto.text.toString()
             val cantidadAComprarStr = etCantidadAComprar.text.toString()
 
-            if (validarNombreProducto(nombreProducto) && validarCantidadMinima(
-                    cantidadMinimaProductoStr
-                ) && validarCantidadActual(cantidadActualProductoStr) && validarCantidadAComprar(
-                    cantidadAComprarStr
-                )
+            if (validarNombreProducto(nombreProducto) &&
+                validarCantidadMinima(cantidadMinimaProductoStr) &&
+                validarCantidadActual(cantidadActualProductoStr) &&
+                validarCantidadMinima(cantidadAComprarStr)
             ) {
                 val cantidadMinimaProducto = cantidadMinimaProductoStr.toInt()
                 val cantidadActualProducto = cantidadActualProductoStr.toInt()
@@ -130,12 +130,14 @@ class MainActivity2 : AppCompatActivity() {
     private fun validarNombreProducto(nombreProducto: String): Boolean {
         if (nombreProducto.isEmpty()) {
             etNombreProducto.error = "El nombre del producto no puede estar vacío"
-            Toast.makeText(this, "El nombre del producto no puede estar vacío", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "El nombre del producto no puede estar vacío", Toast.LENGTH_SHORT)
+                .show()
             return false
         }
         return true
     }
 
+    /*
     private fun validarCantidadAComprar(cantidadAComprarStr: String): Boolean {
         if (cantidadAComprarStr.isEmpty()) {
             etCantidadAComprar.error = "La cantidad a comprar no puede estar vacía"
@@ -149,15 +151,20 @@ class MainActivity2 : AppCompatActivity() {
 
         return true
     }
-
+*/
     private fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
         if (cantidadMinimaProductoStr.isEmpty()) {
             etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede estar vacía"
-            Toast.makeText(this, "La cantidad mínima de stock no puede estar vacía", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "La cantidad mínima de stock no puede estar vacía",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
-        }else if (cantidadMinimaProductoStr.toInt() <= 0) {
+        } else if (cantidadMinimaProductoStr.toInt() <= 0) {
             etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede ser 0"
-            Toast.makeText(this, "La cantidad mínima de stock no puede ser 0", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "La cantidad mínima de stock no puede ser 0", Toast.LENGTH_SHORT)
+                .show()
             return false
         }
         return true
@@ -166,7 +173,11 @@ class MainActivity2 : AppCompatActivity() {
     private fun validarCantidadActual(cantidadActualProductoStr: String): Boolean {
         if (cantidadActualProductoStr.isEmpty()) {
             etCantidadActualProducto.error = "La cantidad actual de stock no puede estar vacía"
-            Toast.makeText(this, "La cantidad actual de stock no puede estar vacía", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                this,
+                "La cantidad actual de stock no puede estar vacía",
+                Toast.LENGTH_SHORT
+            ).show()
             return false
         }
         return true
@@ -193,7 +204,7 @@ class MainActivity2 : AppCompatActivity() {
                             .addOnSuccessListener {
                                 // Éxito al guardar el producto en la despensa
                                 Toast.makeText(
-                                    this@MainActivity2,
+                                    this@AnadirDespensaActivity,
                                     "Producto guardado en la lista de la compra correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -201,14 +212,14 @@ class MainActivity2 : AppCompatActivity() {
                             }
                             .addOnFailureListener {
                                 Toast.makeText(
-                                    this@MainActivity2,
+                                    this@AnadirDespensaActivity,
                                     "Error al guardar el producto en la lista de la compra",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                     } else {
                         Toast.makeText(
-                            this@MainActivity2,
+                            this@AnadirDespensaActivity,
                             "No se encontró la casa para el usuario actual",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -217,14 +228,18 @@ class MainActivity2 : AppCompatActivity() {
 
                 override fun onError(error: Exception?) {
                     Toast.makeText(
-                        this@MainActivity2,
+                        this@AnadirDespensaActivity,
                         "Error obteniendo casa: ${error?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             })
         } else {
-            Toast.makeText(this@MainActivity2, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                this@AnadirDespensaActivity,
+                "El usuario no está autenticado",
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
     }
@@ -235,18 +250,18 @@ class MainActivity2 : AppCompatActivity() {
         cantidadActualProducto: Int,
         cantidadMinimaProducto: Int
 
-    ){
-        // 1. Obtener referencia a la base de datos Firebase
+    ) {
+        // Obtener referencia a la base de datos Firebase
         val databaseReference = FirebaseDatabase.getInstance().reference
 
-        // 2. Obtener el ID de la casa del usuario actual (asumiendo que ya tienes implementada la obtención del ID del usuario)
+        //Obtener el ID de la casa del usuario actual
         val userId = FirebaseAuth.getInstance().currentUser?.uid
         if (userId != null) {
             realTimeManager.obtenerCasaPorIdUsuario(userId, object :
                 ObtenerCasaPorIdUsuarioCallBack {
                 override fun onCasaObtenida(casa: Casa?) {
                     if (casa != null) {
-                        // 3. Crear un objeto ProductoDespensa con los datos proporcionados
+                        // Crear un objeto ProductoDespensa con los datos proporcionados
                         val productoDespensa =
                             ProductoDespensa(
                                 nombreProducto,
@@ -254,14 +269,13 @@ class MainActivity2 : AppCompatActivity() {
                                 cantidadMinimaProducto
 
                             )
-                        // 4. Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
+                        // Utilizar el nombre del producto como clave para almacenar el objeto ProductoDespensa en la lista productosDespensa de la casa
                         databaseReference.child("casas").child(casa.id)
                             .child("productosDespensa").child(nombreProducto)
                             .setValue(productoDespensa)
                             .addOnSuccessListener {
-                                // Éxito al guardar el producto en la despensa
                                 Toast.makeText(
-                                    this@MainActivity2,
+                                    this@AnadirDespensaActivity,
                                     "Producto guardado en la despensa correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -269,14 +283,14 @@ class MainActivity2 : AppCompatActivity() {
                             }
                             .addOnFailureListener {
                                 Toast.makeText(
-                                    this@MainActivity2,
+                                    this@AnadirDespensaActivity,
                                     "Error al guardar el producto en la despensa",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                     } else {
                         Toast.makeText(
-                            this@MainActivity2,
+                            this@AnadirDespensaActivity,
                             "No se encontró la casa para el usuario actual",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -286,7 +300,7 @@ class MainActivity2 : AppCompatActivity() {
                 override fun onError(error: Exception?) {
                     Log.e("MainActivity2", "Error obteniendo casa: ${error?.message}")
                     Toast.makeText(
-                        this@MainActivity2,
+                        this@AnadirDespensaActivity,
                         "Error obteniendo casa: ${error?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -295,10 +309,15 @@ class MainActivity2 : AppCompatActivity() {
         } else {
             // El usuario no está autenticado
             Log.e("MainActivity2", "El usuario no está autenticado")
-            Toast.makeText(this@MainActivity2, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                this@AnadirDespensaActivity,
+                "El usuario no está autenticado",
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
     }
+
     override fun onBackPressed() {
         super.onBackPressed()
         onBackPressedDispatcher.onBackPressed()

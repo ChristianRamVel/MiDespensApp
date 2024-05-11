@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity2"
+    tools:context=".vista.despensa.AnadirDespensaActivity"
     android:background="?attr/colorSecondaryVariant"
     >
 
@@ -41,6 +41,7 @@
         android:hint="@string/cantidadMinimaProducto"
         android:textColorHint="?attr/colorOnSecondary"
         android:inputType="number"
+        android:maxLength="4"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/cantidadActual"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,6 +55,7 @@
         android:hint="@string/cantidad_en_stock"
         android:textColorHint="?attr/colorOnSecondary"
         android:inputType="number"
+        android:maxLength="4"
         android:allowClickWhenDisabled="true"
         android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toTopOf="@id/checkBox"
@@ -78,6 +80,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/cantidadParaComprar"
         android:inputType="number"
+        android:maxLength="4"
         android:textColorHint="?attr/colorOnSecondary"
         android:visibility="gone"
         android:layout_marginHorizontal="20dp"

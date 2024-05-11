@@ -1,8 +1,8 @@
-package com.example.midespensapp.DB
+package com.example.midespensapp.controlador
 
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
 
 interface CrearCasaCallBack {
     fun onCasaCreada(casa: Casa)
@@ -62,5 +62,15 @@ interface BorrarCasaCallBack {
 
 interface BorrarUsuarioCallBack {
     fun onUsuarioBorrado()
+    fun onError(error: Exception?)
+}
+
+interface DisminuirStockDespensaCallBack {
+    fun onStockDisminuido()
+    fun onError(error: Exception?)
+}
+
+interface AumentarStockDespensaCallBack {
+    fun onStockAumentado()
     fun onError(error: Exception?)
 }

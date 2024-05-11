@@ -1,4 +1,4 @@
-package com.example.midespensapp
+package com.example.midespensapp.vista
 
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -9,11 +9,12 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.example.midespensapp.DB.ComprobarCasaExisteCallBack
-import com.example.midespensapp.DB.CrearCasaCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.Usuario
+import com.example.midespensapp.R
+import com.example.midespensapp.controlador.ComprobarCasaExisteCallBack
+import com.example.midespensapp.controlador.CrearCasaCallBack
+import com.example.midespensapp.controlador.RealTimeManager
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.Usuario
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DatabaseReference

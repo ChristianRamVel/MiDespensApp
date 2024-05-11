@@ -1,4 +1,4 @@
-package com.example.midespensapp.ui.lista
+package com.example.midespensapp.vista.lista
 
 import android.content.Context
 import android.content.Intent
@@ -14,18 +14,17 @@ import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.example.midespensapp.DB.AumentarCantidadAComprarCallBack
-import com.example.midespensapp.DB.BorrarProductoListaCompraCallBack
-import com.example.midespensapp.DB.DisminuirCantidadAComprarCallBack
-import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
-import com.example.midespensapp.DB.ObtenerProductosDespensaCallBack
-import com.example.midespensapp.DB.ObtenerProductosListaCompraCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.MainActivity3
+import com.example.midespensapp.controlador.AumentarCantidadAComprarCallBack
+import com.example.midespensapp.controlador.BorrarProductoListaCompraCallBack
+import com.example.midespensapp.controlador.DisminuirCantidadAComprarCallBack
+import com.example.midespensapp.controlador.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.controlador.ObtenerProductosDespensaCallBack
+import com.example.midespensapp.controlador.ObtenerProductosListaCompraCallBack
+import com.example.midespensapp.controlador.RealTimeManager
 import com.example.midespensapp.R
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
@@ -101,7 +100,7 @@ class ListaFragment : Fragment() {
 
     private fun configurarBotones() {
         botonAnadirProducto.setOnClickListener {
-            val intent = Intent(context, MainActivity3::class.java)
+            val intent = Intent(context, AnadirCompraActivity::class.java)
             startActivity(intent)
         }
 

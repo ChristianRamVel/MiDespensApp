@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorDeFondo"
-    tools:context=".SplashScreenActivity">
+    tools:context=".vista.SplashScreenActivity">
 
     <ImageView
         android:id="@+id/imagen"

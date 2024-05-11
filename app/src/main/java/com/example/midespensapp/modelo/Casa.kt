@@ -1,7 +1,6 @@
-package com.example.midespensapp.clases
+package com.example.midespensapp.modelo
 
 import com.google.gson.annotations.SerializedName
-import java.lang.reflect.Constructor
 
 
 class Casa(

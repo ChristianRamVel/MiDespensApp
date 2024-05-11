@@ -1,10 +1,9 @@
-package com.example.midespensapp.DB
+package com.example.midespensapp.controlador
 
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
-import com.example.midespensapp.clases.Usuario
-import com.google.firebase.auth.FirebaseAuth
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
+import com.example.midespensapp.modelo.Usuario
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -15,7 +14,6 @@ class RealTimeManager {
     private val databaseReference =
         FirebaseDatabase.getInstance("https://midespensaapp-ddc2e-default-rtdb.europe-west1.firebasedatabase.app").reference
     private val database = FirebaseDatabase.getInstance()
-    private val auth = FirebaseAuth.getInstance()
 
 
     fun obtenerUsuariosPorIdCasa(casaId: String, callback: ObtenerUsuariosPorIdCasaCallBack) {
@@ -425,6 +423,94 @@ class RealTimeManager {
         })
     }
 
+    fun disminuirStockDespensa(
+        casaId: String,
+        producto: ProductoDespensa,
+        callback: DisminuirStockDespensaCallBack
+    ) {
+        val query = database.reference.child("casas").child(casaId).child("productosDespensa")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosDespensa = snapshot.children.mapNotNull {
+                        it.getValue(ProductoDespensa::class.java)
+                    }
+
+                    val productoAModificar =
+                        productosDespensa.find { it.nombre == producto.nombre }
+
+                    if (productoAModificar != null) {
+                        val cantidad = productoAModificar.stockActual
+                        if (cantidad > 0) {
+                            val productoRef = query.child(productoAModificar.nombre)
+                            productoRef.child("stockActual").setValue(cantidad - 1)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        callback.onStockDisminuido()
+                                    } else {
+                                        callback.onError(task.exception)
+                                    }
+                                }
+                        } else {
+                            callback.onError(DatabaseError("La cantidad no puede ser negativa."))
+                        }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la lista de la compra."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
+
+
+    fun aumentarStockDespensa(
+        casaId: String,
+        producto: ProductoDespensa,
+        callback: AumentarStockDespensaCallBack
+    ) {
+        val query = database.reference.child("casas").child(casaId).child("productosDespensa")
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val productosDespensa = snapshot.children.mapNotNull {
+                        it.getValue(ProductoDespensa::class.java)
+                    }
+
+                    val productoAModificar =
+                        productosDespensa.find { it.nombre == producto.nombre }
+
+                    if (productoAModificar != null) {
+                        val cantidad = productoAModificar.stockActual
+                        val productoRef = query.child(productoAModificar.nombre)
+                        productoRef.child("stockActual").setValue(cantidad + 1)
+                            .addOnCompleteListener { task ->
+                                if (task.isSuccessful) {
+                                    callback.onStockAumentado()
+                                } else {
+                                    callback.onError(task.exception)
+                                }
+                            }
+                    } else {
+                        callback.onError(DatabaseError("No se encontró el producto en la lista de la compra."))
+                    }
+                } else {
+                    callback.onError(DatabaseError("No se encontraron productos en la lista de la compra."))
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                callback.onError(error.toException())
+            }
+        })
+    }
 
 
 

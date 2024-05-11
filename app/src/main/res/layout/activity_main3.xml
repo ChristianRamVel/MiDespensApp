@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity3"
+    tools:context=".vista.lista.AnadirCompraActivity"
     android:background="?attr/colorSecondaryVariant"
     >
 
@@ -42,6 +42,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/cantidadParaComprar"
         android:inputType="number"
+        android:maxLength="4"
         android:visibility="visible"
         android:textColorHint="?attr/colorOnSecondary"
         android:layout_marginHorizontal="20dp"
@@ -69,6 +70,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/cantidadMinimaProducto"
         android:inputType="number"
+        android:maxLength="4"
         android:layout_marginHorizontal="20dp"
         android:textColorHint="?attr/colorOnSecondary"
         android:visibility="gone"
@@ -85,6 +87,7 @@
         android:layout_height="wrap_content"
         android:hint="@string/cantidad_en_stock"
         android:inputType="number"
+        android:maxLength="4"
         android:visibility="gone"
         android:textColorHint="?attr/colorOnSecondary"
         android:layout_marginHorizontal="20dp"

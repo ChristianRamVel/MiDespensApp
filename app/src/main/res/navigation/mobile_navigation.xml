@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="com.example.midespensapp.ui.despensa.DespensaFragment"
+        android:name="com.example.midespensapp.vista.despensa.DespensaFragment"
         android:label="@string/titulo_despensa"
         tools:layout="@layout/fragment_despensa" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="com.example.midespensapp.ui.lista.ListaFragment"
+        android:name="com.example.midespensapp.vista.lista.ListaFragment"
         android:label="@string/titulo_lista"
         tools:layout="@layout/fragment_lista" />
 
     <fragment
         android:id="@+id/navigation_notifications"
-        android:name="com.example.midespensapp.ui.notificaciones.NotificacionesFragment"
+        android:name="com.example.midespensapp.vista.notificaciones.NotificacionesFragment"
         android:label="@string/titulo_notificaciones"
         tools:layout="@layout/fragment_notificaciones" />
 </navigation>

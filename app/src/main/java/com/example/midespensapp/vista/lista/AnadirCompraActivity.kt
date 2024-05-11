@@ -1,4 +1,4 @@
-package com.example.midespensapp
+package com.example.midespensapp.vista.lista
 
 import android.os.Bundle
 import android.widget.Button
@@ -7,15 +7,16 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.midespensapp.DB.ObtenerCasaPorIdUsuarioCallBack
-import com.example.midespensapp.DB.RealTimeManager
-import com.example.midespensapp.clases.Casa
-import com.example.midespensapp.clases.ProductoDespensa
-import com.example.midespensapp.clases.ProductoListaCompra
+import com.example.midespensapp.R
+import com.example.midespensapp.controlador.ObtenerCasaPorIdUsuarioCallBack
+import com.example.midespensapp.controlador.RealTimeManager
+import com.example.midespensapp.modelo.Casa
+import com.example.midespensapp.modelo.ProductoDespensa
+import com.example.midespensapp.modelo.ProductoListaCompra
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity3 : AppCompatActivity() {
+class AnadirCompraActivity : AppCompatActivity() {
 
     private val realTimeManager = RealTimeManager()
     private lateinit var etNombreProducto: EditText
@@ -52,6 +53,12 @@ class MainActivity3 : AppCompatActivity() {
         botonRegistrar.setOnClickListener {
 
             registrarProducto()
+
+            etNombreProducto.text.clear()
+            etCantidadMinimaProducto.text.clear()
+            etCantidadActualProducto.text.clear()
+            etCantidadAComprar.text.clear()
+            checkbox.isChecked = false
         }
     }
 
@@ -120,7 +127,7 @@ class MainActivity3 : AppCompatActivity() {
         return true
     }
 
-    private fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
+    public fun validarCantidadMinima(cantidadMinimaProductoStr: String): Boolean {
         if (cantidadMinimaProductoStr.isEmpty()) {
             etCantidadMinimaProducto.error = "La cantidad mínima de stock no puede estar vacía"
             Toast.makeText(
@@ -173,7 +180,7 @@ class MainActivity3 : AppCompatActivity() {
                             .addOnSuccessListener {
                                 // Éxito al guardar el producto en la despensa
                                 Toast.makeText(
-                                    this@MainActivity3,
+                                    this@AnadirCompraActivity,
                                     "Producto guardado en la lista de la compra correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -181,14 +188,14 @@ class MainActivity3 : AppCompatActivity() {
                             }
                             .addOnFailureListener {
                                 Toast.makeText(
-                                    this@MainActivity3,
+                                    this@AnadirCompraActivity,
                                     "Error al guardar el producto en la lista de la compra",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                     } else {
                         Toast.makeText(
-                            this@MainActivity3,
+                            this@AnadirCompraActivity,
                             "No se encontró la casa para el usuario actual",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -197,7 +204,7 @@ class MainActivity3 : AppCompatActivity() {
 
                 override fun onError(error: Exception?) {
                     Toast.makeText(
-                        this@MainActivity3,
+                        this@AnadirCompraActivity,
                         "Error obteniendo casa: ${error?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -205,7 +212,7 @@ class MainActivity3 : AppCompatActivity() {
             })
         } else {
             // El usuario no está autenticado
-            Toast.makeText(this@MainActivity3, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+            Toast.makeText(this@AnadirCompraActivity, "El usuario no está autenticado", Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -241,7 +248,7 @@ class MainActivity3 : AppCompatActivity() {
                             .addOnSuccessListener {
                                 // Éxito al guardar el producto en la despensa
                                 Toast.makeText(
-                                    this@MainActivity3,
+                                    this@AnadirCompraActivity,
                                     "Producto guardado en la despensa correctamente",
                                     Toast.LENGTH_SHORT
                                 ).show()
@@ -249,14 +256,14 @@ class MainActivity3 : AppCompatActivity() {
                             }
                             .addOnFailureListener {
                                 Toast.makeText(
-                                    this@MainActivity3,
+                                    this@AnadirCompraActivity,
                                     "Error al guardar el producto en la despensa",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
                     } else {
                         Toast.makeText(
-                            this@MainActivity3,
+                            this@AnadirCompraActivity,
                             "No se encontró la casa para el usuario actual",
                             Toast.LENGTH_SHORT
                         ).show()
@@ -265,7 +272,7 @@ class MainActivity3 : AppCompatActivity() {
 
                 override fun onError(error: Exception?) {
                     Toast.makeText(
-                        this@MainActivity3,
+                        this@AnadirCompraActivity,
                         "Error obteniendo casa: ${error?.message}",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -273,7 +280,7 @@ class MainActivity3 : AppCompatActivity() {
             })
         } else {
 
-            Toast.makeText(this@MainActivity3, "El usuario no está autenticado", Toast.LENGTH_SHORT)
+            Toast.makeText(this@AnadirCompraActivity, "El usuario no está autenticado", Toast.LENGTH_SHORT)
                 .show()
         }
     }
