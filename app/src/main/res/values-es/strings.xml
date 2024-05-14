@@ -24,7 +24,7 @@
     <string name="invalid_username">Usuario no válido</string>
     <string name="invalid_password">La contraseña debe tener más de 5 caracteres</string>
     <string name="login_failed">Error al iniciar sesión</string>
-    <string name="checkbox">Añadir a la lista de la compra</string>
+    <string name="anadir_a_lista_compra">Añadir a la lista de la compra</string>
     <string name="registrarse">Registrarse</string>
     <string name="cerrar_sesion">Cerrar Sesión</string>
     <string name="registrarseEnCasaExistente">Registrarse en una casa existente</string>

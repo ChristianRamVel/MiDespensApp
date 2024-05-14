@@ -23,7 +23,7 @@
     <string name="invalid_username">Invalid username</string>
     <string name="invalid_password">Password must be longer than 5 characters</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="checkbox">Add to the shopping list</string>
+    <string name="anadir_a_lista_compra">Add to the shopping list</string>
     <string name="registrarse">Register</string>
     <string name="cerrar_sesion">Log out</string>
     <string name="registrarseEnCasaExistente">Register in existing house</string>

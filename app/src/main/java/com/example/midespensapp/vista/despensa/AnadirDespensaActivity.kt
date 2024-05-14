@@ -29,6 +29,10 @@ class AnadirDespensaActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
 
+        val actionBar = supportActionBar
+        actionBar!!.title = getString(R.string.anadir_a_despensa)
+
+
         etNombreProducto = findViewById(R.id.nombreProducto)
         etCantidadMinimaProducto = findViewById(R.id.cantidadMinimaStock)
         etCantidadActualProducto = findViewById(R.id.cantidadActual)
@@ -316,12 +320,6 @@ class AnadirDespensaActivity : AppCompatActivity() {
             )
                 .show()
         }
-    }
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        onBackPressedDispatcher.onBackPressed()
-        finish()
     }
 
 }

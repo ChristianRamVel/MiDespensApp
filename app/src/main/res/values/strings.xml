@@ -22,7 +22,7 @@
     <string name="invalid_username">Usuario no valido</string>
     <string name="invalid_password">La contraseña debe ser mayor de 5 cracteres</string>
     <string name="login_failed">"Login failed"</string>
-    <string name="checkbox">Añadir a la lista de la compra</string>
+    <string name="anadir_a_lista_compra">Añadir a la lista de la compra</string>
     <string name="registrarse">registrarse</string>
     <string name="cerrar_sesion">Cerrar Sesion</string>
     <string name="registrarseEnCasaExistente">registrar en casa existente</string>

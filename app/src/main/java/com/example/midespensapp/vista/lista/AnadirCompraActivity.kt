@@ -31,6 +31,10 @@ class AnadirCompraActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main3)
 
+        val actionBar = supportActionBar
+        actionBar!!.title = getString(R.string.anadir_a_lista_compra)
+
+
         etNombreProducto = findViewById(R.id.nombreProducto)
         etCantidadMinimaProducto = findViewById(R.id.cantidadMinimaStock)
         etCantidadActualProducto = findViewById(R.id.cantidadActual)
