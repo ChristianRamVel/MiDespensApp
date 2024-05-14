@@ -30,7 +30,7 @@ class AnadirDespensaActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main2)
 
         val actionBar = supportActionBar
-        actionBar!!.title = getString(R.string.anadir_a_despensa)
+        supportActionBar?.title = getString(R.string.anadir_a_despensa)
 
 
         etNombreProducto = findViewById(R.id.nombreProducto)

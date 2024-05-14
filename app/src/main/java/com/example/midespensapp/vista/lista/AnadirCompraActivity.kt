@@ -35,6 +35,9 @@ class AnadirCompraActivity : AppCompatActivity() {
         actionBar!!.title = getString(R.string.anadir_a_lista_compra)
 
 
+        //poner en la barra el nombre de la actividad
+        supportActionBar?.title = getString(R.string.anadir_a_lista_compra)
+
         etNombreProducto = findViewById(R.id.nombreProducto)
         etCantidadMinimaProducto = findViewById(R.id.cantidadMinimaStock)
         etCantidadActualProducto = findViewById(R.id.cantidadActual)
