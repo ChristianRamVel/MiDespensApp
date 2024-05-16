@@ -62,4 +62,6 @@
     <string name="borrar_cuenta">Borrar cuenta</string>
     <string name="cancelar">Cancelar</string>
     <string name="error_eliminando_cuenta">Error al eliminar la cuenta</string>
+    <string name="dialog_eliminar">¿Estás seguro de que quieres borrar tu cuenta en MiDespensApp?, tambien se borrarian todos los datos asociados a ella,incluida la casa en caso de ser el unico miembro.</string>
+    <string name="titulo_dialog_eliminar">Borrar Cuenta</string>
 </resources>

@@ -63,4 +63,7 @@
     <string name="borrar_cuenta">Delete account</string>
     <string name="cancelar">Cancel</string>
     <string name="error_eliminando_cuenta">Error deleting the account</string>
+    <string name="dialog_eliminar">Are you sure you want to delete your account in MiDespensApp? All associated data will also be deleted, including the house if you are the only member.</string>
+    <string name="titulo_dialog_eliminar">Delete Account</string>
+
 </resources>

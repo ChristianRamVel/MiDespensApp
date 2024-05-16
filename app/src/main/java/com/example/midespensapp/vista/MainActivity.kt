@@ -236,8 +236,8 @@ class MainActivity : AppCompatActivity() {
 
             R.id.borrar_cuenta -> {
                 AlertDialog.Builder(this)
-                    .setTitle("Borrar Cuenta")
-                    .setMessage("¿Estás seguro de que quieres borrar tu cuenta en MiDespensApp?, tambien se borrarian todos los datos asociados a ella,incluida la casa en caso de ser el unico miembro.")
+                    .setTitle(getString(R.string.titulo_dialog_eliminar))
+                    .setMessage(getString(R.string.dialog_eliminar))
                     .setPositiveButton(getString(R.string.aceptar)) { dialog, _ ->
                         val userId = FirebaseAuth.getInstance().currentUser?.uid
                         if (userId != null) {
